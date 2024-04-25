@@ -1,0 +1,148 @@
+/* CSS to style the submenu */
+
+/* MENS */
+.submenu {
+    position: absolute;
+    top:68%; /* Position the submenu below the men's list item */
+    left: 150px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    display: none; /* Hide the submenu by default */
+}
+
+.menu-item:hover .submenu {
+    display: inline-block; /* Show the submenu when hovering over the men's list item */
+}
+
+.submenu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0px;
+}
+
+.submenu ul li {
+    font-weight: 100;
+    padding: 3px;
+}
+.submenu ul li:hover {
+    font-weight: bold;
+}
+
+/* WOMEN */
+.submenu2 {
+    position: absolute;
+    top: 68%; /* Position the submenu below the men's list item */
+    left: 200px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    display: none; /* Hide the submenu by default */
+}
+
+.menu-item:hover .submenu2 {
+    display: inline-block; /* Show the submenu when hovering over the men's list item */
+}
+
+.submenu2 ul {
+    list-style: none;
+    padding: 0;
+    margin: 0px;
+}
+
+.submenu2 ul li {
+    font-weight: 100;
+    padding: 3px;
+}
+.submenu2 ul li:hover {
+    font-weight: bold;
+}
+
+/* KIDS */
+.submenu3 {
+    position: absolute;
+    top: 68%; /* Position the submenu below the men's list item */
+    left: 250px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    display: none; /* Hide the submenu by default */
+}
+
+.menu-item:hover .submenu3 {
+    display: block; /* Show the submenu when hovering over the men's list item */
+}
+
+.submenu3 ul {
+    list-style: none;
+    padding: 0px;
+    margin: 0px;
+}
+
+.submenu3 ul li {
+    font-weight: 100;
+    padding: 3px;
+}
+.submenu3 ul li:hover {
+    font-weight: bold;
+}
+
+/* Home and Living */
+
+.submenu4 {
+    position: absolute;
+    top: 85%; /* Position the submenu below the men's list item */
+    left: 380px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    display: none; /* Hide the submenu by default */
+}
+
+.menu-item:hover .submenu4 {
+    display: block; /* Show the submenu when hovering over the men's list item */
+}
+
+.submenu4 ul {
+    list-style: none;
+    padding: 0px;
+    margin: 0px;
+}
+
+.submenu4 ul li {
+    font-weight: 100;
+    padding: 3px;
+}
+.submenu4 ul li:hover {
+    font-weight: bold;
+}
+
+/* Beauty */
+
+.submenu5 {
+    position: absolute;
+    top: 68%; /* Position the submenu below the men's list item */
+    left: 450px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    display: none; /* Hide the submenu by default */
+}
+
+.menu-item:hover .submenu5 {
+    display: block; /* Show the submenu when hovering over the men's list item */
+}
+
+.submenu5 ul {
+    list-style: none;
+    padding: 0px;
+    margin: 0px;
+}
+
+.submenu5 ul li {
+    font-weight: 100;
+    padding: 3px;
+}
+.submenu5 ul li:hover {
+    font-weight: bold;
+}
