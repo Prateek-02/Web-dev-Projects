@@ -71,6 +71,7 @@ main hr{
 .leftSec .buttons{
     padding: 30px 10px;
 }
+
 .leftSec .btn{
     padding: 12px;
     background: #1d1f55;
@@ -79,7 +80,11 @@ main hr{
     border-radius: 5px;
     box-shadow: 2px 2px 5px rgb(169, 167, 167);
     cursor: pointer;
+}
 
+.leftSec .btn a{
+    text-decoration: none;
+    color: white;
 }
 
 
