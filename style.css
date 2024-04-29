@@ -37,7 +37,12 @@ nav ul li a:hover{
     color: rgb(153,153,226);
     font-size: 1.1rem;
 }
-
+#email{
+    margin-top: 20px;
+    margin-left: 70%;
+    cursor: pointer;
+    color: rgb(153,153,226);
+}
 main hr{
     border: 0;
     background: gray;
