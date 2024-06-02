@@ -1,0 +1,17 @@
+body{
+    background-color: rgb(52, 44, 44);
+}
+
+h1{
+    display: flex;
+    justify-content: center;
+}
+
+h3{
+    display: flex;
+    justify-content: center;
+}
+p{
+    display: flex;
+    justify-content: center;
+}
