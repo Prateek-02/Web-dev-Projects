@@ -1,0 +1,39 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+h1{
+    text-align: center;
+    font-size: 60px;
+}
+
+.container{
+    display: flex;
+    justify-content: center;
+    margin-top: 100px;
+    gap: 23px;
+}
+
+.box{
+    height: 200px;
+    width: 150px;
+    border: 2px solid black;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#colorBtn{
+    margin-left: 50%;
+    margin-top: 50px;
+    padding: 13px;
+    font-size: 15px;
+    box-shadow: 5px 5px 10px black;
+    border: none;
+    border-radius: 15px;
+    color: white;
+    background-color: rgb(23, 193, 193);
+    cursor: pointer;
+}
