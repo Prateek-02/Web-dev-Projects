@@ -87,7 +87,6 @@ main hr{
     color: white;
 }
 
-
 .rightSec img{
     width: 80%;
 }
@@ -114,6 +113,7 @@ main hr{
     display: flex;
     font-size: 1.9rem;
     justify-content: center;
+    color: rgb(170,107,228);
 }
 
 .content {
@@ -131,11 +131,21 @@ main hr{
     flex: 1;
 }
 
+.skills h2{
+    margin-bottom: 20px;
+}
+
 .skills ul {
     list-style: none;
     padding: 0;
 }
-
+.skills ul:hover{
+    cursor: pointer;
+}
+.skills ul li:hover{
+    scale: 1.1;
+    color: rgb(153,153,226);
+}
 .skills li {
     background: #333;
     color: #fff;
@@ -143,8 +153,12 @@ main hr{
     padding: 10px;
     border-radius: 5px;
 }
+
 .projects{
     flex: 1;
+}
+.projects h2{
+    margin-bottom: 10px;
 }
 .project {
     margin-bottom: 20px;
@@ -159,8 +173,12 @@ main hr{
 }
 
 .project a {
-    color: #0779e4;
+    color: rgb(153,153,226); 
     text-decoration: none;
+}
+
+.project a:hover{
+    color:#007bff;
 }
 
 footer{
@@ -176,8 +194,9 @@ footer{
     list-style: none;
 }
 
-.footer > div{
-    width: 200x;
+
+.footer-first{
+    color: rgb(170,107,228);
 }
 
 footer .footer-rights{
@@ -189,7 +208,7 @@ footer .footer-rights{
 
 .social-media a {
     text-decoration: none;
-    color: #35b9c0;
+    color: rgb(153,153,226);
     margin: 0 10px;
 }
   
@@ -205,7 +224,7 @@ footer .footer-rights{
 
 .contact-info p a{
     text-decoration: none;
-    color:white;
+    color: rgb(153,153,226);
 }
 
 .contact-info p a:hover{
