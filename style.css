@@ -107,47 +107,62 @@ main hr{
 .secondSec{
     max-width: 80vw;
     margin: auto;
-    height: 80vh;
+    height: 90vh;
 }
 
 .secondSec h1{
-    font-size: 1.9rem;
-}
-
-.secondSec .box{
-    background: white;
-    width: 80vw;
-    height: 2px;
-    margin: 45px 0;
     display: flex;
+    font-size: 1.9rem;
+    justify-content: center;
 }
 
-.secondSec .vertical{
-    height: 90px;
-    width: 1px;
-    background-color: white;
-    margin-inline: 100px;
+.content {
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    gap: 50px;
+}   
+
+.content > div{
+    margin: 20px;
 }
 
-.img-top{
-    position: relative;
-    width: 23px;
-    top:-32px;
-    left: -9px;
+.skills {
+    flex: 1;
 }
 
-.vertical-title{
-    position: relative;
-    top: 75px;
-    width: 150px;
+.skills ul {
+    list-style: none;
+    padding: 0;
 }
-.vertical-desc{
-    position: relative;
-    top: 90px;
-    color: gray;
-    width: 150px;
-    font-size: 10px;
+
+.skills li {
+    background: #333;
+    color: #fff;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
 }
+.projects{
+    flex: 1;
+}
+.project {
+    margin-bottom: 20px;
+}
+
+.project h3 {
+    margin: 0;
+}
+
+.project p {
+    margin: 10px 0;
+}
+
+.project a {
+    color: #0779e4;
+    text-decoration: none;
+}
+
 footer{
     background-color: #0e0e1a;
 }
@@ -170,5 +185,45 @@ footer .footer-rights{
     color: gray;
     padding: 12px 0;
 }
+
+
+.social-media a {
+    text-decoration: none;
+    color: #35b9c0;
+    margin: 0 10px;
+}
+  
+.social-media i {
+    margin-right: 5px;
+    margin-top: 10px;
+    font-size: larger;
+}
+  
+.social-media a:hover {
+    color: #007bff;
+}
+
+.contact-info p a{
+    text-decoration: none;
+    color:white;
+}
+
+.contact-info p a:hover{
+    color: #007bff;
+}
+
+.navigation li a{
+    text-decoration: none;
+    color: white;
+}
+.navigation li{
+    margin-top: 5px;
+}
+
+.navigation li a:hover{
+    color: #007bff;
+}
+
+
 
 
