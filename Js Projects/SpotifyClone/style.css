@@ -1,0 +1,183 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+*{
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+}
+
+body{
+    background-color: black;
+    color: white;
+}
+
+.left{
+    width: 25vw;
+    padding: 8px;
+}
+
+.right{
+    width: 75vw;
+    margin: 8px 0;
+}
+
+.home{
+    padding: 18px 10px;
+    height: 115px;
+}
+
+.home ul li{
+    display: flex;
+    list-style: none;
+    width: 25px;
+    gap: 18px;
+    font-weight: 700;
+    padding: 10px;
+}
+
+.logo{
+    padding-left: 10px;
+    padding-bottom: 5px;
+}
+
+.library{
+    position: relative;
+    margin-top: 6px;
+    padding: 18px 10px;
+    min-height: 80vh;
+}
+
+.lib img{
+    width: 25px;
+    padding-left: 10px;
+}
+
+.lib{
+    display: flex;
+    gap: 18px;
+    color: grey;
+    font-weight: 700;
+}
+
+.footer{
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 10px;
+    gap: 10px;
+    position: absolute;
+    bottom: 0;
+}
+
+.footer a{
+    color: grey;
+}
+
+
+.header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgb(34,34,34);
+}
+
+.header > *{
+    padding: 10px;
+}
+
+.buttons button{
+    padding: 15px;
+    border-radius: 30px;
+    width: 95px;
+    border: 1px;
+    margin-right: 15px;
+}
+
+.buttons a{
+    text-decoration: none;
+}
+
+.buttons button:hover{
+    scale: 1.05;
+}
+
+.buttons > a:hover{
+    color: white;
+    font-size: 17px;
+}
+.one{
+    color: gray;
+    font-weight: bolder;
+    margin-right: 10px;
+}
+
+.two{
+    color: black;
+    font-weight: bolder;
+    font-size: 15px;
+}
+
+
+.spotify-playlist{
+    padding: 16px;
+}
+
+.spotify-playlist h2{
+    padding: 20px 0;
+    padding-left: 3px;
+}
+
+.cardContainer{
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.card{
+    width: 175px;
+    position: relative;
+}
+
+.card > *{
+    padding-top: 10px;
+}
+
+.card img{
+    width: 160px;
+    border-radius: 50%;
+    padding: 15px;
+}
+
+.card h3{
+    font-size: 15px;
+}
+
+.card p{
+    font-size: 12px;
+    color: gray;
+    font-weight: 500;
+}
+
+.card:hover{
+    background-color: #252525;
+    transition: 0.5s;
+}
+
+.card:hover .play{
+    display: flex;
+}
+
+.play{
+    position: absolute;
+    right: 10px;
+    bottom: 80px;
+    display: none;    
+}
+
+.play:hover{
+    scale: 1.1;
+    transition: 0.2s;
+}
+
+
+
+
