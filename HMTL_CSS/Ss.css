@@ -65,6 +65,59 @@ body{
     background-color: silver;
 }
 
+
+.mercury{
+    position: absolute;
+    border-style: solid;
+    border-color: white transparent transparent;
+    border-width: 0.1em 0.1em 0 0;
+    border-radius: 50%;
+    top: 5em;
+    left: 5em;
+    width: 20em;
+    height: 20em;
+    animation: orbit 26.5s linear infinite;
+}
+
+.mercury::before{
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+}
+
+.mercury::before{
+    top: 1.8em;
+    right: 1.8em;
+    width: 3em;
+    height: 3em;
+    background-color: rgb(225, 0, 255);
+}
+
+.venus{
+    position: absolute;
+    border-style: solid;
+    border-color: white transparent transparent;
+    border-width: 0.1em 0.1em 0 0;
+    border-radius: 50%;
+    top: 3em;
+    left: 3.7em;
+    width: 24em;
+    height: 25em;
+    animation: orbit 30.5s linear infinite;
+}
+
+.venus::before{
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    top: 1.8em;
+    right: 1.8em;
+    width: 3em;
+    height: 3em;
+    background-color: rgb(55, 255, 0);
+}
+
+
 @keyframes orbit {
     to{
         transform: rotate(360deg);
