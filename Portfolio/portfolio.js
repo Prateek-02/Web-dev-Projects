@@ -33,11 +33,17 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-
+// scroll to about on click
 document.getElementById('about-link').addEventListener('click', function(event) {
     event.preventDefault();
     document.getElementById('about').scrollIntoView({
         behavior: 'smooth'
     });
+});
+
+
+// toggle menu bar
+document.getElementById('mobile-menu').addEventListener('click', function() {
+    document.querySelector('nav ul').classList.toggle('showing');
 });
 
