@@ -16,6 +16,12 @@ h1{
     margin-top: 20px;
 }
 
+input{
+    border: none;
+    border-radius: 5px;
+    box-shadow: 5px 5px 15px black;
+}
+
 #height,#weight{
     width: 150px;
     height: 25px;
@@ -30,6 +36,7 @@ button{
     padding: 5px;
     font-weight: 700;
     background-color: aquamarine;
+    box-shadow: 2px 2px 5px black;
 }
 
 #results{
