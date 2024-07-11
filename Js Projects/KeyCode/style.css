@@ -1,0 +1,18 @@
+table,th,td{
+    border: 1px solid #d81717;
+}
+
+.project{
+    background-color: #1c1c1c;
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.color{
+    color: antiquewhite;
+    display: flex;
+    flex-direction: row;
+}
