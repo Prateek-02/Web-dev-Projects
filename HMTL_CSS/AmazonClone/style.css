@@ -212,12 +212,12 @@ span{
     text-decoration: none;
 }
 
-.box1{
+.full-img{
     display: flex;
     flex-wrap: wrap;
 }
 
-.box1 img{
+.full-img img{
     height: 300px;
     width: 280px;
     padding-top: 20px;
@@ -225,54 +225,49 @@ span{
     object-fit: cover;
 }
 
-
-
-.box2{
+.split-img{
     display: flex;
     flex-wrap: wrap;
 }
 
-.box2 img{
+.split-img img{
     height: 120px; 
     width: 120px;
     margin-left: 15px;
     margin-top: 18px;
 }
 
-.box2 > div p{
+.split-img > div p{
     font-size: 12px;
     margin-left: 15px;
     margin-top: 0;
 }
 
-.box3{
+.box5{
     display: flex;
     flex-wrap: wrap;
 }
 
-.box3 img{
-    height: 120px; 
-    width: 120px;
-    margin-left: 15px;
-    margin-top: 18px;
-}
-
-.box3 > div p{
-    font-size: 12px;
-    margin-left: 15px;
-    margin-top: 0;
-}
-
-.box3{
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.box4 img{
-    height: 300px;
+.box5 .img1 {
+    height: 150px;
     width: 280px;
     padding-top: 20px;
     padding-left: 5px;
     object-fit: cover;
 }
+
+.box5 .img2{
+    height: 80px;
+    width: 80px;
+    padding-top: 20px;
+    padding-left: 13px;
+    object-fit: cover;
+}
+
+.box5 > div p{
+    font-size: 12px;
+    margin-left: 15px;
+    margin-top: 0;
+}
+
 
