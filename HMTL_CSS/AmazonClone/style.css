@@ -149,3 +149,130 @@ span{
     font-size: 0.9rem;
     font-weight: 700;
 }
+
+
+/** Hero Section **/
+ 
+.hero-section{
+    background-image: url("HeroImg.jpg");
+    background-size: cover;
+    height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+.hero-msg{
+    background-color: white;
+    color: black;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.85rem;
+    width: 80%;
+    margin-bottom: 25px;
+}
+
+.hero-msg a{
+    color: #007185;
+}
+
+
+/** Shop section **/
+
+.shop-section{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    background-color: rgb(232, 232, 232);
+}
+
+.box{
+    height: 400px;
+    width: 23%;
+    background-color: white;
+    padding: 20px 0px 15px;
+    margin-top: 15px;
+}
+.box h2{
+    padding-top: 20px;
+    padding-left: 10px;
+    font-size: 1.2rem;
+}
+
+.box p{
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
+.box p a{
+    color: #007185;
+    font-size: 0.8rem;
+    text-decoration: none;
+}
+
+.box1{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.box1 img{
+    height: 300px;
+    width: 280px;
+    padding-top: 20px;
+    padding-left: 5px;
+    object-fit: cover;
+}
+
+
+
+.box2{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.box2 img{
+    height: 120px; 
+    width: 120px;
+    margin-left: 15px;
+    margin-top: 18px;
+}
+
+.box2 > div p{
+    font-size: 12px;
+    margin-left: 15px;
+    margin-top: 0;
+}
+
+.box3{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.box3 img{
+    height: 120px; 
+    width: 120px;
+    margin-left: 15px;
+    margin-top: 18px;
+}
+
+.box3 > div p{
+    font-size: 12px;
+    margin-left: 15px;
+    margin-top: 0;
+}
+
+.box3{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.box4 img{
+    height: 300px;
+    width: 280px;
+    padding-top: 20px;
+    padding-left: 5px;
+    object-fit: cover;
+}
+
