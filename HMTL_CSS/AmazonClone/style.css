@@ -316,7 +316,7 @@ footer{
 .foot-panel2{
     background-color: #222f3d;
     color: white;
-    height: 500px;
+    height: 300px;
     display: flex;
     justify-content: space-evenly;
 }
@@ -352,4 +352,24 @@ ul p{
     background-size: cover;
     height: 50px;
     width: 100px;
+}
+
+.foot-panel4{
+    background-color: #0f1111;
+    color: white;
+    height: 80px;
+    font-size: 0.7rem;
+    text-align: center;
+    /* display: flex;
+    justify-content: center;
+    align-items: center; */
+
+}
+
+.pages{
+    padding-top: 25px;
+}
+
+.copyright{
+    padding-top: 10px;
 }
