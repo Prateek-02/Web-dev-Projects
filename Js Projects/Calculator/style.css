@@ -3,12 +3,23 @@
     width: 210px;
     text-align: center;
     margin-bottom: 10px;
-    color: red;
+    color: #212121;
+    position: relative;
+    left: 45%;
 }
 
+table{
+    position: relative;
+    background: #000000;
+    left: 45%;
+}
+
+
 input[type="button"]{
-    background-color: bisque;
+    background-color: #212121;
+    color: white;
     width: 100%;
+    border-radius: 50%;
 }
 
 input[type = "text"]{
