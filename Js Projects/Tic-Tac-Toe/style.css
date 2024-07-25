@@ -78,13 +78,13 @@ body{
 
 @media (max-width: 768px) {
     .game {
-        height: 80vmin;
-        width: 80vmin;
+        height: 70vmin;
+        width: 70vmin;
     }
 
     .box {
-        height: 22vmin;
-        width: 22vmin;
+        height: 20vmin;
+        width: 20vmin;
         font-size: 10vmin;
     }
 
@@ -97,13 +97,13 @@ body{
 
 @media (max-width: 480px) {
     .game {
-        height: 90vmin;
+        height: 70vmin;
         width: 90vmin;
     }
 
     .box {
-        height: 28vmin;
-        width: 28vmin;
+        height: 25vmin;
+        width: 25vmin;
         font-size: 12vmin;
     }
 
@@ -114,5 +114,6 @@ body{
     #reset-btn, #new-btn {
         padding: 0.75rem;
         font-size: 1rem;
+        margin-top: 1.3rem;
     }
 }
