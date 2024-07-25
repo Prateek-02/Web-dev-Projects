@@ -72,3 +72,47 @@ body{
 .hide{
     display: none;
 }
+
+
+/* Media Queries for responsiveness */
+
+@media (max-width: 768px) {
+    .game {
+        height: 80vmin;
+        width: 80vmin;
+    }
+
+    .box {
+        height: 22vmin;
+        width: 22vmin;
+        font-size: 10vmin;
+    }
+
+    #msg {
+        font-size: 10vmin;
+    }
+}
+
+
+
+@media (max-width: 480px) {
+    .game {
+        height: 90vmin;
+        width: 90vmin;
+    }
+
+    .box {
+        height: 28vmin;
+        width: 28vmin;
+        font-size: 12vmin;
+    }
+
+    #msg {
+        font-size: 12vmin;
+    }
+
+    #reset-btn, #new-btn {
+        padding: 0.75rem;
+        font-size: 1rem;
+    }
+}
