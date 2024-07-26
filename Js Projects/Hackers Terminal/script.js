@@ -31,7 +31,7 @@ async function main() {
         "Password files Detected",
         "Sending all passwords and personal files to server",
         "Cleaning up",
-        "Hacked!!!"]
+        "Hacked Successfully"]
 
     for (const item of text) {
         await additem(item);
