@@ -27,7 +27,7 @@ const questions = [
         ]
     },
     {
-        question: "Which is the smallest comtinet in the world?",
+        question: "Which is the smallest continet in the world?",
         answers:[
             {text: "Asia", correct : false},
             {text: "Australia", correct : true},
