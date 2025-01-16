@@ -47,7 +47,7 @@ function App() {
             </h1>
             <p className="text-xl text-gray-600 animate-fade-slide-down delay-100">to the</p>
             <h2 className="text-3xl md:text-4xl text-pink-600 font-semibold animate-fade-slide-down delay-200">
-              Engagement Ceremony
+              Engagement Ceremony of
             </h2>
           </div>
 
@@ -64,7 +64,7 @@ function App() {
           <div className="space-y-6 mb-12">
             <div className="flex items-center justify-center space-x-3 animate-fade-slide-down delay-400 hover:transform hover:scale-105 transition-transform duration-300">
               <Calendar className="w-6 h-6 text-pink-500" />
-              <p className="text-xl text-gray-700">January 27th, 2025 | 5:00 PM onwards</p>
+              <p className="text-xl text-gray-700">January 27th, 2025 | 12:00 PM onwards</p>
             </div>
             
             <div className="flex items-center justify-center space-x-3 animate-fade-slide-down delay-500 hover:transform hover:scale-105 transition-transform duration-300">
