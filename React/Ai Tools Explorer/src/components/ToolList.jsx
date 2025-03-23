@@ -3,25 +3,34 @@ import { supabase } from "../supabaseClient";
 
 const ToolList = () => {
   const [tools, setTools] = useState([]);
-  const [filteredTools, setFilteredTools] = useState([]); // For search/filter results
+  const [filteredTools, setFilteredTools] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [loading, setLoading] = useState(true); // 🔄 Loading State
 
   useEffect(() => {
     const fetchTools = async () => {
-      const { data, error } = await supabase.from("ai_tools").select("*");
-      if (error) console.log("Error fetching tools:", error);
-      else {
-        console.log("Fetched Tools:", data);
-        setTools(data);
-        setFilteredTools(data);
+      try {
+        const { data, error } = await supabase.from("ai_tools").select("*");
+        if (error) {
+          console.error("Error fetching tools:", error);
+          // Optionally set an error state here to show to the user
+        } else {
+          setTools(data || []);
+          setFilteredTools(data || []);
+        }
+      } catch (err) {
+        console.error("Failed to fetch tools:", err);
+        // Optionally set an error state here to show to the user
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchTools();
   }, []);
 
-  // 🔍 Handle Search
+  // 🔍 Handle Search & Filtering
   useEffect(() => {
     let filtered = tools;
 
@@ -39,21 +48,23 @@ const ToolList = () => {
   }, [searchQuery, selectedCategory, tools]);
 
   return (
-    <div className="container mx-auto px-4">
-      <h1 className="text-4xl font-bold text-center mb-6">AI Tools</h1>
+    <div className="container px-20 pb-10 mt-40 mb-0 bg-black  shadow-lg">
+      <h1 className="text-4xl font-bold text-center text-white hover:text-blue-950 pt-5">AI Tools</h1>
 
       {/* 🔍 Search Input */}
-      <input
-        type="text"
-        placeholder="Search AI Tools..."
-        className="w-full p-3 rounded-md border border-gray-600 text-white"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-      />
+      <div className="flex justify-center">
+        <input
+          type="text"
+          placeholder="Search AI Tools..."
+          className="w-3xl p-3 rounded-md border border-gray-600 text-white bg-gray-900 mt-10"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </div>
 
       {/* 🏷️ Category Filters */}
       <div className="flex gap-3 justify-center mt-4">
-        {["All", "Writing", "Design", "Audio", "Chatbots"].map((category) => (
+        {["All", "Writing", "Design", "Audio", "Chatbots", "Coding","PPT","Video"].map((category) => (
           <button
             key={category}
             className={`px-4 py-2 rounded-lg ${
@@ -68,22 +79,40 @@ const ToolList = () => {
         ))}
       </div>
 
-      {/* 🔽 AI Tools List */}
-      <ul className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+      {/* 🔄 Loading Animation */}
+      {loading && (
+        <div className="text-center mt-10 text-lg text-gray-400">
+          Loading AI Tools...
+        </div>
+      )}
+
+      {/* 🔽 AI Tools List - Grid with Cards */}
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
         {filteredTools.length > 0 ? (
           filteredTools.map((tool) => (
-            <li
+            <div
               key={tool.id}
-              className="p-4 bg-gray-800 rounded-lg shadow-md"
+              className="bg-gray-800 p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:shadow-xl"
             >
-              <h2 className="text-xl font-semibold">{tool.name}</h2>
-              <p className="text-gray-400">{tool.category}</p>
-            </li>
+              
+              <h2 className="text-xl font-semibold mt-4 text-center ">{tool.name}</h2>
+              <p className="text-gray-400 text-sm text-center">{tool.category}</p>
+              <p className="text-gray-300 mt-2 text-sm text-center">{tool.description}</p>
+              <a
+                href={tool.website_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block mt-4 bg-blue-500 hover:bg-blue-600 hover:cursor-pointer text-white text-center py-2 rounded-md"
+                onClick={() => window.open(tool.website_url, '_blank')}
+              >
+                Visit Website
+              </a>
+            </div>
           ))
         ) : (
-          <p className="text-center text-gray-400">No tools found.</p>
+          !loading && <p className="text-center text-gray-400">No tools found.</p>
         )}
-      </ul>
+      </div>
     </div>
   );
 };

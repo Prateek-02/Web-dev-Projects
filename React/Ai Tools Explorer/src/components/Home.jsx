@@ -1,22 +1,24 @@
 import ToolList from "./ToolList";
-import bgImage from "../assets/Bg_img.jpg";
+import Bg_img from "../assets/Bg_img.jpg"
+import Footer from "./Footer";
 
 
 const Home = () => {
   return (
-    <div
-    className="min-h-screen bg-cover bg-center bg-no-repeat text-white px-6 py-12"
-    style={{ backgroundImage: `url(${bgImage})` }}
-    >
+    <div style={{ backgroundImage: `url(${Bg_img})`, backgroundSize: 'cover', backgroundPosition: 'center', height: '65vh' }}>
         
       {/* Hero Section */}
+      
+
       <div className="text-center max-w-3xl mx-auto">
-        <h1 className="text-4xl md:text-5xl font-bold">Explore the Best AI Tools</h1>
-        <p className="mt-4 text-gray-300">Discover AI-powered tools that enhance productivity, creativity, and efficiency.</p>
+        <h1 className="text-4xl md:text-5xl font-bold text-white pt-10">Explore the Best AI Tools</h1>
+        <p className="mt-4 text-amber-100 ">Discover AI-powered tools that enhance productivity, creativity, and efficiency.</p>
+        <h1 className="text-4xl md:text-5xl font-bold text-white pt-10 hover:text-gray-300">Your One Stop for all AI&apos;s</h1>
       </div>
 
       {/* AI Tools Section */}
       <ToolList />
+      <Footer/>
     </div>
   );
 };
