@@ -48,7 +48,7 @@ const ToolList = () => {
   }, [searchQuery, selectedCategory, tools]);
 
   return (
-    <div className="container px-20 pb-10 mt-40 mb-0 bg-black  shadow-lg">
+    <div className="px-20 pb-10 mt-40 mb-0 bg-black shadow-lg">
       <h1 className="text-4xl font-bold text-center text-white hover:text-blue-950 pt-5">AI Tools</h1>
 
       {/* 🔍 Search Input */}
@@ -87,7 +87,7 @@ const ToolList = () => {
       )}
 
       {/* 🔽 AI Tools List - Grid with Cards */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-12 mt-6">
         {filteredTools.length > 0 ? (
           filteredTools.map((tool) => (
             <div
