@@ -31,7 +31,6 @@ import {
   Person,
   PersonAdd,
   Google,
-  GitHub,
   AutoAwesome,
   CheckCircle,
   Error,
@@ -39,8 +38,26 @@ import {
   Rocket,
   Star,
 } from '@mui/icons-material';
-import { Link as RouterLink } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { createClient } from '@supabase/supabase-js';
+
+// Initialize Supabase client
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+// Google Identity Services loader
+const loadGoogleScript = () => {
+  // Only load once
+  if (document.getElementById('google-client-script')) return;
+  const script = document.createElement('script');
+  script.src = 'https://accounts.google.com/gsi/client';
+  script.async = true;
+  script.defer = true;
+  script.id = 'google-client-script';
+  document.body.appendChild(script);
+};
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -60,8 +77,12 @@ export default function Register() {
   const [alertMessage, setAlertMessage] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
-  
+
+  // Google One Tap state
+  const [googleLoading, setGoogleLoading] = useState(false);
+
   const theme = useTheme();
+  const navigate = useNavigate();
 
   const benefits = [
     { icon: <Shield />, title: 'Secure & Private', color: '#4caf50' },
@@ -71,8 +92,12 @@ export default function Register() {
 
   const steps = ['Personal Info', 'Account Setup', 'Complete'];
 
+  // Google button ref for rendering the button
+  const googleBtnRef = useRef(null);
+
   useEffect(() => {
     setMounted(true);
+    loadGoogleScript();
   }, []);
 
   useEffect(() => {
@@ -97,32 +122,32 @@ export default function Register() {
 
   const validateForm = () => {
     const { name, email, password, confirmPassword } = formData;
-    
+
     if (!name.trim()) {
       showAlertMessage('error', 'Please enter your full name');
       return false;
     }
-    
+
     if (!email.includes('@')) {
       showAlertMessage('error', 'Please enter a valid email address');
       return false;
     }
-    
+
     if (password.length < 8) {
       showAlertMessage('error', 'Password must be at least 8 characters long');
       return false;
     }
-    
+
     if (password !== confirmPassword) {
       showAlertMessage('error', 'Passwords do not match');
       return false;
     }
-    
+
     if (!termsAccepted) {
       showAlertMessage('error', 'Please accept the terms and conditions');
       return false;
     }
-    
+
     return true;
   };
 
@@ -133,29 +158,97 @@ export default function Register() {
     setTimeout(() => setShowAlert(false), 4000);
   };
 
+  // Register user with Supabase
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-    
+
     setIsLoading(true);
-    
-    // Simulate registration steps
-    for (let i = 0; i <= 2; i++) {
+    setActiveStep(1);
+
+    try {
+      // Sign up user with Supabase Auth
+      const { user, error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            name: formData.name,
+          },
+        },
+      });
+
+      if (error) {
+        setIsLoading(false);
+        setActiveStep(0);
+        showAlertMessage('error', error.message || 'Registration failed');
+        return;
+      }
+
+      // Optionally, insert user profile data into a "profiles" table
+      // (if you have a separate table for user details)
+      // await supabase.from('profiles').insert([
+      //   { id: user.id, name: formData.name, email: formData.email }
+      // ]);
+
+      setActiveStep(2);
+      showAlertMessage('success', 'Account created successfully! Please check your email to verify your account.');
+
+      // Wait a moment to show success, then redirect
       setTimeout(() => {
-        setActiveStep(i);
-        if (i === 2) {
-          setIsLoading(false);
-          showAlertMessage('success', 'Account created successfully! Welcome aboard! 🎉');
-          console.log('Register attempt with:', formData);
-        }
-      }, i * 1000);
+        setIsLoading(false);
+        navigate('/login');
+      }, 2000);
+    } catch (err) {
+      setIsLoading(false);
+      setActiveStep(0);
+      showAlertMessage('error', err.message || 'Registration failed');
     }
   };
 
-  const handleSocialRegister = (provider) => {
-    console.log(`Register with ${provider}`);
-    // TODO: Implement social registration
+  // Google Sign Up Handler (render Google button as in login page)
+  useEffect(() => {
+    if (!mounted) return;
+    if (!window.google || !googleBtnRef.current) return;
+
+    setGoogleLoading(false);
+
+    // Remove any previous button
+    googleBtnRef.current.innerHTML = '';
+
+    window.google.accounts.id.initialize({
+      client_id: '663732832122-em3m7djoa0rl09jam6htka8pae4v92gq.apps.googleusercontent.com', // <-- Replace with your Google client ID
+      callback: handleGoogleCredentialResponse,
+      ux_mode: 'popup',
+    });
+
+    window.google.accounts.id.renderButton(googleBtnRef.current, {
+      theme: theme.palette.mode === 'dark' ? 'filled_black' : 'outline',
+      size: 'large',
+      text: 'signup_with',
+      shape: 'pill',
+      width: 340,
+      logo_alignment: 'left',
+    });
+  // eslint-disable-next-line
+  }, [mounted, theme.palette.mode]);
+
+  // Handle Google credential response
+  const handleGoogleCredentialResponse = async (response) => {
+    setGoogleLoading(false);
+    if (response.credential) {
+      // Send Google credential to Supabase for sign up
+      try {
+        // Supabase supports signInWithIdToken for Google, but you need to enable Google provider in Supabase dashboard
+        // Here, we just show a success alert for demo
+        showAlertMessage('success', 'Google account selected! Please use "Sign in with Google" on the login page.');
+      } catch (err) {
+        showAlertMessage('error', err.message || 'Google sign up failed.');
+      }
+    } else {
+      showAlertMessage('error', 'Google sign up failed.');
+    }
   };
 
   const getPasswordStrengthColor = () => {
@@ -629,47 +722,17 @@ export default function Register() {
                   </Divider>
 
                   {/* Social Registration Buttons */}
-                  <Stack direction="row" spacing={2}>
-                    <Button
-                      fullWidth
-                      variant="outlined"
-                      startIcon={<Google />}
-                      onClick={() => handleSocialRegister('Google')}
+                  <Stack direction="row" spacing={2} justifyContent="center">
+                    <Box
+                      ref={googleBtnRef}
                       sx={{
-                        py: 1.2,
-                        borderRadius: 2,
-                        borderColor: '#db4437',
-                        color: '#db4437',
-                        '&:hover': {
-                          borderColor: '#c23321',
-                          backgroundColor: '#db443710',
-                          transform: 'translateY(-2px)',
-                        },
-                        transition: 'all 0.3s ease',
+                        width: '100%',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        minHeight: 44,
                       }}
-                    >
-                      Google
-                    </Button>
-                    <Button
-                      fullWidth
-                      variant="outlined"
-                      startIcon={<GitHub />}
-                      onClick={() => handleSocialRegister('GitHub')}
-                      sx={{
-                        py: 1.2,
-                        borderRadius: 2,
-                        borderColor: '#333',
-                        color: '#333',
-                        '&:hover': {
-                          borderColor: '#000',
-                          backgroundColor: '#33333310',
-                          transform: 'translateY(-2px)',
-                        },
-                        transition: 'all 0.3s ease',
-                      }}
-                    >
-                      GitHub
-                    </Button>
+                    />
                   </Stack>
 
                   {/* Footer Link */}
@@ -695,9 +758,7 @@ export default function Register() {
             </Slide>
           </Box>
         </Fade>
-      </Container>
-
-      <style jsx>{`
+      </Container>      <style jsx>{`
         @keyframes spin {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }

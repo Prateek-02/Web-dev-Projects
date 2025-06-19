@@ -25,13 +25,12 @@ import {
   Lock,
   Login as LoginIcon,
   Google,
-  GitHub,
   AutoAwesome,
   Security,
   Speed,
 } from '@mui/icons-material';
-import { Link as RouterLink } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -43,8 +42,12 @@ export default function Login() {
   const [passwordFocused, setPasswordFocused] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [showAlert, setShowAlert] = useState(false);
-  
+
+  // Social login loading state
+  const [socialLoading, setSocialLoading] = useState(null); // 'google' | null
+
   const theme = useTheme();
+  const navigate = useNavigate();
 
   const features = [
     { icon: <Security />, text: 'Secure Login', color: '#4caf50' },
@@ -69,20 +72,116 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     // Simulate API call
     setTimeout(() => {
       setIsLoading(false);
       setShowAlert(true);
       console.log('Login attempt with:', { email, password });
-      
-      setTimeout(() => setShowAlert(false), 3000);
+
+      // Redirect to home after login
+      setTimeout(() => {
+        setShowAlert(false);
+        navigate('/');
+      }, 1000);
     }, 2000);
   };
 
+  // --- Google Sign-In logic (like Register page) ---
+  // This will use the Google Identity Services button and handle the callback.
+  // We'll render the button in a ref container and trigger it on click.
+
+  const googleBtnRef = useRef(null);
+  const [googleBtnRendered, setGoogleBtnRendered] = useState(false);
+
+  // Google Client ID (should match the one in Register page)
+  const GOOGLE_CLIENT_ID = '663732832122-em3m7djoa0rl09jam6htka8pae4v92gq.apps.googleusercontent.com';
+
+  // Load Google script and render button on mount (once)
+  useEffect(() => {
+    if (googleBtnRendered) return;
+    if (!window.google || !window.google.accounts || !window.google.accounts.id) {
+      const script = document.createElement('script');
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.async = true;
+      script.defer = true;
+      script.onload = () => {
+        renderGoogleButton();
+      };
+      document.body.appendChild(script);
+    } else {
+      renderGoogleButton();
+    }
+    // eslint-disable-next-line
+  }, []);
+
+  const renderGoogleButton = () => {
+    if (
+      window.google &&
+      window.google.accounts &&
+      window.google.accounts.id &&
+      googleBtnRef.current &&
+      !googleBtnRendered
+    ) {
+      window.google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: handleGoogleCredentialResponse,
+        ux_mode: 'popup',
+      });
+      window.google.accounts.id.renderButton(googleBtnRef.current, {
+        theme: theme.palette.mode === 'dark' ? 'filled_black' : 'outline',
+        size: 'large',
+        text: 'continue_with',
+        shape: 'pill',
+        width: 320,
+        logo_alignment: 'left',
+      });
+      setGoogleBtnRendered(true);
+    }
+  };
+
+  // Handle Google credential response
+  const handleGoogleCredentialResponse = (response) => {
+    setSocialLoading(null);
+    setShowAlert(true);
+    // You can decode the JWT if you want to show the user's email
+    // For now, just log the credential
+    console.log('Google credential:', response.credential);
+    // Redirect to home after Google login
+    setTimeout(() => {
+      setShowAlert(false);
+      navigate('/');
+    }, 1000);
+  };
+
+  // Social login handler (only Google)
   const handleSocialLogin = (provider) => {
-    console.log(`Login with ${provider}`);
-    // TODO: Implement social login
+    if (provider.toLowerCase() === 'google') {
+      setSocialLoading('google');
+      // Simulate click on the rendered Google button
+      if (
+        googleBtnRef.current &&
+        googleBtnRef.current.querySelector('div[role="button"]')
+      ) {
+        googleBtnRef.current.querySelector('div[role="button"]').click();
+      } else {
+        // fallback: try to render again
+        renderGoogleButton();
+        setTimeout(() => {
+          if (
+            googleBtnRef.current &&
+            googleBtnRef.current.querySelector('div[role="button"]')
+          ) {
+            googleBtnRef.current.querySelector('div[role="button"]').click();
+          } else {
+            setSocialLoading(null);
+            alert('Google Sign-In is not available.');
+          }
+        }, 500);
+      }
+      return;
+    }
+    // No other providers supported
   };
 
   const getPasswordStrengthColor = () => {
@@ -102,7 +201,7 @@ export default function Login() {
     <Box
       sx={{
         minHeight: '100vh',
-        background: theme.palette.mode === 'light' 
+        background: theme.palette.mode === 'light'
           ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
           : 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
         position: 'relative',
@@ -149,9 +248,9 @@ export default function Login() {
                 >
                   <LoginIcon sx={{ fontSize: '2.5rem' }} />
                 </Avatar>
-                
-                <Typography 
-                  component="h1" 
+
+                <Typography
+                  component="h1"
                   variant="h3"
                   sx={{
                     fontWeight: 800,
@@ -164,13 +263,13 @@ export default function Login() {
                 >
                   Welcome Back
                 </Typography>
-                
+
                 <Typography variant="h6" color="white" sx={{ opacity: 0.9 }}>
                   Sign in to explore amazing{' '}
-                  <Link 
-                    component={RouterLink} 
-                    to="/" 
-                    sx={{ 
+                  <Link
+                    component={RouterLink}
+                    to="/"
+                    sx={{
                       color: theme.palette.secondary.main,
                       textDecoration: 'none',
                       fontWeight: 600,
@@ -210,8 +309,8 @@ export default function Login() {
             {/* Alert */}
             {showAlert && (
               <Fade in={showAlert}>
-                <Alert 
-                  severity="success" 
+                <Alert
+                  severity="success"
                   sx={{ mb: 3, borderRadius: 2 }}
                   onClose={() => setShowAlert(false)}
                 >
@@ -265,11 +364,11 @@ export default function Login() {
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
-                            <Email 
-                              sx={{ 
+                            <Email
+                              sx={{
                                 color: emailFocused ? theme.palette.primary.main : 'text.secondary',
                                 transition: 'color 0.3s ease'
-                              }} 
+                              }}
                             />
                           </InputAdornment>
                         ),
@@ -307,11 +406,11 @@ export default function Login() {
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
-                            <Lock 
-                              sx={{ 
+                            <Lock
+                              sx={{
                                 color: passwordFocused ? theme.palette.primary.main : 'text.secondary',
                                 transition: 'color 0.3s ease'
-                              }} 
+                              }}
                             />
                           </InputAdornment>
                         ),
@@ -346,7 +445,7 @@ export default function Login() {
                         },
                       }}
                     />
-                    
+
                     {/* Password Strength Indicator */}
                     {password && (
                       <Fade in={Boolean(password)}>
@@ -364,9 +463,9 @@ export default function Login() {
                               },
                             }}
                           />
-                          <Typography 
-                            variant="caption" 
-                            sx={{ 
+                          <Typography
+                            variant="caption"
+                            sx={{
                               color: getPasswordStrengthColor(),
                               fontWeight: 600,
                               mt: 0.5,
@@ -386,7 +485,7 @@ export default function Login() {
                     fullWidth
                     variant="contained"
                     size="large"
-                    disabled={isLoading}
+                    disabled={isLoading || socialLoading !== null}
                     startIcon={isLoading ? null : <LoginIcon />}
                     sx={{
                       mt: 3,
@@ -437,46 +536,16 @@ export default function Login() {
 
                   {/* Social Login Buttons */}
                   <Stack direction="row" spacing={2}>
-                    <Button
-                      fullWidth
-                      variant="outlined"
-                      startIcon={<Google />}
-                      onClick={() => handleSocialLogin('Google')}
+                    <Box
+                      ref={googleBtnRef}
                       sx={{
-                        py: 1.2,
-                        borderRadius: 2,
-                        borderColor: '#db4437',
-                        color: '#db4437',
-                        '&:hover': {
-                          borderColor: '#c23321',
-                          backgroundColor: '#db443710',
-                          transform: 'translateY(-2px)',
-                        },
-                        transition: 'all 0.3s ease',
+                        width: '100%',
+                        minHeight: 40,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                       }}
-                    >
-                      Google
-                    </Button>
-                    <Button
-                      fullWidth
-                      variant="outlined"
-                      startIcon={<GitHub />}
-                      onClick={() => handleSocialLogin('GitHub')}
-                      sx={{
-                        py: 1.2,
-                        borderRadius: 2,
-                        borderColor: '#333',
-                        color: '#333',
-                        '&:hover': {
-                          borderColor: '#000',
-                          backgroundColor: '#33333310',
-                          transform: 'translateY(-2px)',
-                        },
-                        transition: 'all 0.3s ease',
-                      }}
-                    >
-                      GitHub
-                    </Button>
+                    />
                   </Stack>
 
                   {/* Footer Links */}
@@ -494,7 +563,7 @@ export default function Login() {
                     >
                       Forgot your password?
                     </Link>
-                    
+
                     <Typography variant="body2" color="text.secondary">
                       Don&apos;t have an account?{' '}
                       <Link
