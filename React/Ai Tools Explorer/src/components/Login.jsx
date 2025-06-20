@@ -168,35 +168,7 @@ export default function Login() {
     }
   };
 
-  // Social login handler (only Google)
-  const handleSocialLogin = (provider) => {
-    if (provider.toLowerCase() === 'google') {
-      setSocialLoading('google');
-      // Simulate click on the rendered Google button
-      if (
-        googleBtnRef.current &&
-        googleBtnRef.current.querySelector('div[role="button"]')
-      ) {
-        googleBtnRef.current.querySelector('div[role="button"]').click();
-      } else {
-        // fallback: try to render again
-        renderGoogleButton();
-        setTimeout(() => {
-          if (
-            googleBtnRef.current &&
-            googleBtnRef.current.querySelector('div[role="button"]')
-          ) {
-            googleBtnRef.current.querySelector('div[role="button"]').click();
-          } else {
-            setSocialLoading(null);
-            alert('Google Sign-In is not available.');
-          }
-        }, 500);
-      }
-      return;
-    }
-    // No other providers supported
-  };
+  
 
   const getPasswordStrengthColor = () => {
     if (passwordStrength < 50) return '#f44336';

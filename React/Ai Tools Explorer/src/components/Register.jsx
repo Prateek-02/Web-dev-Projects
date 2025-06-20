@@ -148,52 +148,45 @@ export default function Register() {
   // Register user with Supabase and store user details in public "profiles" table
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (!validateForm()) return;
-
+  
     setIsLoading(true);
-
+  
     try {
       // Sign up user with Supabase Auth
-      const { data, error } = await supabase.auth.signUp({
+      const { error: signUpError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
           data: {
-            name: formData.name,
+            name: formData.name, // ✅ stored in user_metadata
           },
         },
       });
-
-      if (error) {
+  
+      if (signUpError) {
         setIsLoading(false);
-        showAlertMessage('error', error.message || 'Registration failed');
+        showAlertMessage('error', signUpError.message || 'Registration failed');
         return;
       }
-
-      // Insert user details into 'profiles' table
-      // The user id is available in data.user.id (if email confirmation is not required)
-      // If email confirmation is required, user will be null, so we use email as unique key
-      let userId = data?.user?.id;
-      let email = formData.email;
-      let name = formData.name;
-
-      // Insert into profiles table if userId is available
-      if (userId) {
-        await supabase
-          .from('profiles')
-          .insert([
-            {
-              id: userId,
-              email,
-              name,
-            },
-          ]);
+  
+      // 🔍 Verify if name is correctly stored
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+  
+      if (userError) {
+        console.error("User fetch error:", userError.message);
+      } else {
+        console.log("User name from metadata:", user.user_metadata?.name);
       }
-
-      // Redirect immediately to login page.
+  
+      // ✅ Redirect to login page
       navigate('/login');
     } catch (err) {
+      console.error("Unexpected error:", err.message);
       setIsLoading(false);
       showAlertMessage('error', err.message || 'Registration failed');
     }
@@ -264,6 +257,14 @@ export default function Register() {
                   name: user_metadata?.name || '',
                 },
               ]);
+          } else {
+            // If profile exists but name is missing, update it
+            if (!existingProfile.name && user_metadata?.name) {
+              await supabase
+                .from('profiles')
+                .update({ name: user_metadata.name })
+                .eq('id', id);
+            }
           }
         }
 
