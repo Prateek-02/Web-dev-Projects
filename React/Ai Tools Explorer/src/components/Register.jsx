@@ -1,3 +1,4 @@
+import { useState, useEffect, useRef } from 'react';
 import {
   Box,
   Button,
@@ -19,9 +20,6 @@ import {
   Alert,
   FormControlLabel,
   Checkbox,
-  Stepper,
-  Step,
-  StepLabel,
 } from '@mui/material';
 import {
   Visibility,
@@ -30,8 +28,6 @@ import {
   Lock,
   Person,
   PersonAdd,
-  Google,
-  AutoAwesome,
   CheckCircle,
   Error,
   Shield,
@@ -39,17 +35,11 @@ import {
   Star,
 } from '@mui/icons-material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { useState, useEffect, useRef } from 'react';
-import { createClient } from '@supabase/supabase-js';
-
 // Initialize Supabase client
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+import { supabase } from '../supabaseClient';
 
 // Google Identity Services loader
 const loadGoogleScript = () => {
-  // Only load once
   if (document.getElementById('google-client-script')) return;
   const script = document.createElement('script');
   script.src = 'https://accounts.google.com/gsi/client';
@@ -76,7 +66,6 @@ export default function Register() {
   const [alertType, setAlertType] = useState('success');
   const [alertMessage, setAlertMessage] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
-  const [activeStep, setActiveStep] = useState(0);
 
   // Google One Tap state
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -89,8 +78,6 @@ export default function Register() {
     { icon: <Rocket />, title: 'Advanced AI Tools', color: '#2196f3' },
     { icon: <Star />, title: 'Premium Features', color: '#ff9800' },
   ];
-
-  const steps = ['Personal Info', 'Account Setup', 'Complete'];
 
   // Google button ref for rendering the button
   const googleBtnRef = useRef(null);
@@ -158,18 +145,17 @@ export default function Register() {
     setTimeout(() => setShowAlert(false), 4000);
   };
 
-  // Register user with Supabase
+  // Register user with Supabase and store user details in public "profiles" table
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validateForm()) return;
 
     setIsLoading(true);
-    setActiveStep(1);
 
     try {
       // Sign up user with Supabase Auth
-      const { user, error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
@@ -181,28 +167,34 @@ export default function Register() {
 
       if (error) {
         setIsLoading(false);
-        setActiveStep(0);
         showAlertMessage('error', error.message || 'Registration failed');
         return;
       }
 
-      // Optionally, insert user profile data into a "profiles" table
-      // (if you have a separate table for user details)
-      // await supabase.from('profiles').insert([
-      //   { id: user.id, name: formData.name, email: formData.email }
-      // ]);
+      // Insert user details into 'profiles' table
+      // The user id is available in data.user.id (if email confirmation is not required)
+      // If email confirmation is required, user will be null, so we use email as unique key
+      let userId = data?.user?.id;
+      let email = formData.email;
+      let name = formData.name;
 
-      setActiveStep(2);
-      showAlertMessage('success', 'Account created successfully! Please check your email to verify your account.');
+      // Insert into profiles table if userId is available
+      if (userId) {
+        await supabase
+          .from('profiles')
+          .insert([
+            {
+              id: userId,
+              email,
+              name,
+            },
+          ]);
+      }
 
-      // Wait a moment to show success, then redirect
-      setTimeout(() => {
-        setIsLoading(false);
-        navigate('/login');
-      }, 2000);
+      // Redirect immediately to login page.
+      navigate('/login');
     } catch (err) {
       setIsLoading(false);
-      setActiveStep(0);
       showAlertMessage('error', err.message || 'Registration failed');
     }
   };
@@ -231,18 +223,54 @@ export default function Register() {
       width: 340,
       logo_alignment: 'left',
     });
-  // eslint-disable-next-line
+    // eslint-disable-next-line
   }, [mounted, theme.palette.mode]);
 
   // Handle Google credential response
   const handleGoogleCredentialResponse = async (response) => {
     setGoogleLoading(false);
     if (response.credential) {
-      // Send Google credential to Supabase for sign up
       try {
-        // Supabase supports signInWithIdToken for Google, but you need to enable Google provider in Supabase dashboard
-        // Here, we just show a success alert for demo
-        showAlertMessage('success', 'Google account selected! Please use "Sign in with Google" on the login page.');
+        // Use Supabase to sign in/up with Google credential
+        // This will create the user in Supabase Auth and return a session
+        const { data, error } = await supabase.auth.signInWithIdToken({
+          provider: 'google',
+          token: response.credential,
+        });
+
+        if (error) {
+          showAlertMessage('error', error.message || 'Google sign up failed.');
+          return;
+        }
+
+        // Insert user details into 'profiles' table if not already present
+        // data.user contains id, email, user_metadata, etc.
+        if (data?.user) {
+          const { id, email, user_metadata } = data.user;
+          // Check if profile already exists
+          const { data: existingProfile } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('id', id)
+            .single();
+
+          if (!existingProfile) {
+            await supabase
+              .from('profiles')
+              .insert([
+                {
+                  id,
+                  email,
+                  name: user_metadata?.name || '',
+                },
+              ]);
+          }
+        }
+
+        showAlertMessage('success', 'Google sign up successful! Redirecting...');
+        setTimeout(() => {
+          navigate('/login');
+        }, 1500);
       } catch (err) {
         showAlertMessage('error', err.message || 'Google sign up failed.');
       }
@@ -363,21 +391,6 @@ export default function Register() {
                 </Stack>
               </Stack>
             </Slide>
-
-            {/* Progress Stepper */}
-            {isLoading && (
-              <Fade in={isLoading}>
-                <Box sx={{ mb: 4 }}>
-                  <Stepper activeStep={activeStep} alternativeLabel>
-                    {steps.map((label) => (
-                      <Step key={label}>
-                        <StepLabel sx={{ color: 'white' }}>{label}</StepLabel>
-                      </Step>
-                    ))}
-                  </Stepper>
-                </Box>
-              </Fade>
-            )}
 
             {/* Alert */}
             {showAlert && (
@@ -758,12 +771,13 @@ export default function Register() {
             </Slide>
           </Box>
         </Fade>
-      </Container>      <style jsx>{`
-        @keyframes spin {
+      </Container>
+      <style>
+        {`@keyframes spin {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
-        }
-      `}</style>
+        }`}
+      </style>
     </Box>
   );
 }

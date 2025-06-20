@@ -31,6 +31,7 @@ import {
 } from '@mui/icons-material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
+import { supabase } from '../supabaseClient';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -82,7 +83,7 @@ export default function Login() {
       // Redirect to home after login
       setTimeout(() => {
         setShowAlert(false);
-        navigate('/');
+        navigate('/home'); // Redirect to home page
       }, 1000);
     }, 2000);
   };
@@ -141,17 +142,30 @@ export default function Login() {
   };
 
   // Handle Google credential response
-  const handleGoogleCredentialResponse = (response) => {
-    setSocialLoading(null);
-    setShowAlert(true);
-    // You can decode the JWT if you want to show the user's email
-    // For now, just log the credential
-    console.log('Google credential:', response.credential);
-    // Redirect to home after Google login
-    setTimeout(() => {
-      setShowAlert(false);
-      navigate('/');
-    }, 1000);
+  const handleGoogleCredentialResponse = async (response) => {
+    const { credential } = response;
+  
+    try {
+      const { data, error } = await supabase.auth.signInWithIdToken({
+        provider: 'google',
+        token: credential, // The JWT from Google
+      });
+  
+      if (error) {
+        console.error('Supabase login error:', error.message);
+        alert('Login failed. Please try again.');
+        return;
+      }
+  
+  
+      // Optional: redirect user
+      navigate('/home');
+    } catch (err) {
+      console.error('Unexpected login error:', err);
+      alert('Unexpected login error. Please try again.');
+    } finally {
+      setSocialLoading(null);
+    }
   };
 
   // Social login handler (only Google)
@@ -589,12 +603,8 @@ export default function Login() {
         </Fade>
       </Container>
 
-      <style jsx>{`
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-      `}</style>
+      
+
     </Box>
   );
 }

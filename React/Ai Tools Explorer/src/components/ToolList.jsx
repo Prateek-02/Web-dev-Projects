@@ -11,17 +11,34 @@ const ToolList = () => {
   useEffect(() => {
     const fetchTools = async () => {
       try {
+        // 🔐 Ensure user is logged in before fetching
+        const {
+          data: { session },
+          error: sessionError,
+        } = await supabase.auth.getSession();
+
+        if (sessionError) {
+          console.error("Error fetching session:", sessionError);
+          setLoading(false);
+          return;
+        }
+
+        if (!session) {
+          console.warn("No session found. Not fetching tools.");
+          setLoading(false);
+          return;
+        }
+
+        // ✅ Fetch tools now
         const { data, error } = await supabase.from("ai_tools").select("*");
         if (error) {
           console.error("Error fetching tools:", error);
-          // Optionally set an error state here to show to the user
         } else {
           setTools(data || []);
           setFilteredTools(data || []);
         }
       } catch (err) {
-        console.error("Failed to fetch tools:", err);
-        // Optionally set an error state here to show to the user
+        console.error("Unexpected error fetching tools:", err);
       } finally {
         setLoading(false);
       }
@@ -35,13 +52,13 @@ const ToolList = () => {
     let filtered = tools;
 
     if (searchQuery) {
-      filtered = filtered.filter(tool =>
+      filtered = filtered.filter((tool) =>
         tool.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
     if (selectedCategory !== "All") {
-      filtered = filtered.filter(tool => tool.category === selectedCategory);
+      filtered = filtered.filter((tool) => tool.category === selectedCategory);
     }
 
     setFilteredTools(filtered);
@@ -49,7 +66,9 @@ const ToolList = () => {
 
   return (
     <div className="px-20 pb-10 mt-40 mb-0 bg-black shadow-lg">
-      <h1 className="text-4xl font-bold text-center text-white hover:text-blue-950 pt-5">AI Tools</h1>
+      <h1 className="text-4xl font-bold text-center text-white hover:text-blue-950 pt-5">
+        AI Tools
+      </h1>
 
       {/* 🔍 Search Input */}
       <div className="flex justify-center">
@@ -64,19 +83,21 @@ const ToolList = () => {
 
       {/* 🏷️ Category Filters */}
       <div className="flex gap-3 justify-center mt-4">
-        {["All", "Writing", "Design", "Audio", "Chatbots", "Coding","PPT","Video"].map((category) => (
-          <button
-            key={category}
-            className={`px-4 py-2 rounded-lg ${
-              selectedCategory === category
-                ? "bg-blue-500 text-white"
-                : "bg-gray-800 text-gray-300"
-            }`}
-            onClick={() => setSelectedCategory(category)}
-          >
-            {category}
-          </button>
-        ))}
+        {["All", "Writing", "Design", "Audio", "Chatbots", "Coding", "PPT", "Video"].map(
+          (category) => (
+            <button
+              key={category}
+              className={`px-4 py-2 rounded-lg ${
+                selectedCategory === category
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-800 text-gray-300"
+              }`}
+              onClick={() => setSelectedCategory(category)}
+            >
+              {category}
+            </button>
+          )
+        )}
       </div>
 
       {/* 🔄 Loading Animation */}
@@ -94,23 +115,28 @@ const ToolList = () => {
               key={tool.id}
               className="bg-gray-800 p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:shadow-xl"
             >
-              
-              <h2 className="text-xl font-semibold mt-4 text-center ">{tool.name}</h2>
+              <h2 className="text-xl font-semibold mt-4 text-center">
+                {tool.name}
+              </h2>
               <p className="text-gray-400 text-sm text-center">{tool.category}</p>
-              <p className="text-gray-300 mt-2 text-sm text-center">{tool.description}</p>
+              <p className="text-gray-300 mt-2 text-sm text-center">
+                {tool.description}
+              </p>
               <a
                 href={tool.website_url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block mt-4 bg-blue-500 hover:bg-blue-600 hover:cursor-pointer text-white text-center py-2 rounded-md"
-                onClick={() => window.open(tool.website_url, '_blank')}
+                onClick={() => window.open(tool.website_url, "_blank")}
               >
                 Visit Website
               </a>
             </div>
           ))
         ) : (
-          !loading && <p className="text-center text-gray-400">No tools found.</p>
+          !loading && (
+            <p className="text-center text-gray-400">No tools found.</p>
+          )
         )}
       </div>
     </div>
