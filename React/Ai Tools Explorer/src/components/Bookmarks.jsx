@@ -42,11 +42,11 @@ export default function Bookmarks() {
         .from("bookmarks")
         .select(`
           tool_id,
-          ai_tools (
+          tools (
             id,
             name,
             description,
-            website_url,
+            url,
             category
           )
         `)
@@ -54,7 +54,7 @@ export default function Bookmarks() {
 
       if (error) throw error;
       
-      const tools = data.map(bookmark => bookmark.ai_tools);
+      const tools = data.map(bookmark => bookmark.tools);
       setBookmarkedTools(tools);
     } catch (error) {
       console.error("Error fetching bookmarked tools:", error.message);
@@ -108,7 +108,7 @@ export default function Bookmarks() {
                 <CardActions sx={{ mt: 'auto' }}>
                   <Button
                     component="a"
-                    href={tool.website_url}
+                    href={tool.url}
                     target="_blank"
                     rel="noopener noreferrer"
                     startIcon={<LaunchIcon />}

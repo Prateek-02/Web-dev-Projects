@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import ToolList from "./ToolList";
 import Bg_img from "../assets/Bg_img.jpg";
 import Footer from "./Footer";
+import ThemeToggle from "./ThemeToggle";
 import { 
   Avatar, 
   Menu, 
@@ -19,7 +20,7 @@ import {
 import { styled, keyframes } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient.js";
-import { Bookmarks as BookmarksIcon } from "@mui/icons-material";
+import { Bookmarks as BookmarksIcon, TrendingUp as TrendingUpIcon } from "@mui/icons-material";
 
 // Animations
 const float = keyframes`
@@ -111,7 +112,8 @@ const FloatingPaper = styled(Paper)(({ theme }) => ({
 
 const HeaderContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
-  justifyContent: 'flex-end',
+  justifyContent: 'space-between',
+  alignItems: 'center',
   padding: theme.spacing(2, 3),
   background: 'rgba(0, 0, 0, 0.2)',
   backdropFilter: 'blur(5px)',
@@ -170,6 +172,11 @@ const Home = () => {
     navigate("/bookmarks");
   };
 
+  const handleActivity = () => {
+    handleClose();
+    navigate("/activity");
+  };
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate("/login");
@@ -177,8 +184,16 @@ const Home = () => {
 
   return (
     <HeroContainer>
-      {/* Enhanced Header with Profile Icon */}
+      {/* Enhanced Header with Profile Icon and Theme Toggle */}
       <HeaderContainer>
+        {/* Theme Toggle on the left */}
+        <Fade in={true} timeout={800}>
+          <Box>
+            <ThemeToggle />
+          </Box>
+        </Fade>
+
+        {/* User Profile on the right */}
         {user && (
           <Fade in={!!user} timeout={800}>
             <Box>
@@ -203,18 +218,24 @@ const Home = () => {
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
               >
                 <MenuItem onClick={handleBookmarks}>
-                  <BookmarksIcon sx={{ mr: 1 }} />
-                  <Typography variant="body1" fontWeight="medium">
+                  <BookmarksIcon sx={{ mr: 1, color: '#000' }} />
+                  <Typography variant="body1" fontWeight="medium" sx={{ color: '#000' }}>
                     My Bookmarks
                   </Typography>
                 </MenuItem>
+                <MenuItem onClick={handleActivity}>
+                  <TrendingUpIcon sx={{ mr: 1, color: '#000' }} />
+                  <Typography variant="body1" fontWeight="medium" sx={{ color: '#000' }}>
+                    My Activity
+                  </Typography>
+                </MenuItem>
                 <MenuItem onClick={handleProfile}>
-                  <Typography variant="body1" fontWeight="medium">
+                  <Typography variant="body1" fontWeight="medium" sx={{ color: '#000' }}>
                     Profile
                   </Typography>
                 </MenuItem>
                 <MenuItem onClick={handleLogout}>
-                  <Typography variant="body1" fontWeight="medium">
+                  <Typography variant="body1" fontWeight="medium" sx={{ color: '#000' }}>
                     Logout
                   </Typography>
                 </MenuItem>

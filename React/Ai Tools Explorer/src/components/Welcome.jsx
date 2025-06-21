@@ -35,6 +35,7 @@ import {
   ArrowForward,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import ThemeToggle from './ThemeToggle';
 
 export default function Welcome() {
   const [checked, setChecked] = useState(false);
@@ -154,6 +155,11 @@ export default function Welcome() {
         },
       }}
     >
+      {/* Theme Toggle in top right corner */}
+      <Box sx={{ position: 'absolute', top: 20, right: 20, zIndex: 10 }}>
+        <ThemeToggle />
+      </Box>
+
       <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1, py: 8 }}>
         {/* Hero Section */}
         <Fade in={checked} timeout={1000}>

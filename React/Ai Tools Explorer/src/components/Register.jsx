@@ -37,6 +37,7 @@ import {
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 // Initialize Supabase client
 import { supabase } from '../supabaseClient.js';
+import ThemeToggle from './ThemeToggle';
 
 // Google Identity Services loader
 const loadGoogleScript = () => {
@@ -323,6 +324,11 @@ export default function Register() {
         },
       }}
     >
+      {/* Theme Toggle in top right corner */}
+      <Box sx={{ position: 'absolute', top: 20, right: 20, zIndex: 10 }}>
+        <ThemeToggle />
+      </Box>
+
       <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1 }}>
         <Fade in={mounted} timeout={800}>
           <Box>

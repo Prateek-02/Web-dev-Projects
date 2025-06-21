@@ -32,6 +32,7 @@ import {
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../supabaseClient.js';
+import ThemeToggle from './ThemeToggle';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -227,6 +228,11 @@ export default function Login() {
         },
       }}
     >
+      {/* Theme Toggle in top right corner */}
+      <Box sx={{ position: 'absolute', top: 20, right: 20, zIndex: 10 }}>
+        <ThemeToggle />
+      </Box>
+
       <Container maxWidth="sm" sx={{ position: 'relative', zIndex: 1 }}>
         <Fade in={mounted} timeout={800}>
           <Box>
@@ -589,9 +595,6 @@ export default function Login() {
           </Box>
         </Fade>
       </Container>
-
-      
-
     </Box>
   );
 }

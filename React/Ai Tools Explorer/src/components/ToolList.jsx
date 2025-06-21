@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
+import { useTheme } from "../contexts/ThemeContext";
+import { analyticsService } from "../services/analyticsService";
 import {
   Box,
   Typography,
@@ -31,8 +33,11 @@ import {
   FilterList as FilterListIcon,
   BookmarkBorder as BookmarkBorderIcon,
   Bookmark as BookmarkIcon,
+  Visibility as VisibilityIcon,
 } from "@mui/icons-material";
 import { styled, keyframes } from "@mui/material/styles";
+import { useNavigate } from "react-router-dom";
+import Rating from "./Rating";
 
 // Animations
 const float = keyframes`
@@ -51,8 +56,10 @@ const shimmer = keyframes`
 `;
 
 // Styled Components
-const StyledContainer = styled(Container)(({ theme }) => ({
-  background: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%)',
+const StyledContainer = styled(Container)(({ theme, darkMode }) => ({
+  background: darkMode 
+    ? 'linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%)'
+    : 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
   minHeight: '100vh',
   paddingTop: theme.spacing(8),
   paddingBottom: theme.spacing(8),
@@ -64,7 +71,9 @@ const StyledContainer = styled(Container)(({ theme }) => ({
     left: 0,
     right: 0,
     height: '200px',
-    background: 'linear-gradient(180deg, rgba(33, 150, 243, 0.1) 0%, transparent 100%)',
+    background: darkMode
+      ? 'linear-gradient(180deg, rgba(33, 150, 243, 0.1) 0%, transparent 100%)'
+      : 'linear-gradient(180deg, rgba(33, 150, 243, 0.05) 0%, transparent 100%)',
     zIndex: 0,
   },
   '& > *': {
@@ -73,14 +82,16 @@ const StyledContainer = styled(Container)(({ theme }) => ({
   },
 }));
 
-const GlowingTitle = styled(Typography)(({ theme }) => ({
+const GlowingTitle = styled(Typography)(({ theme, darkMode }) => ({
   background: 'linear-gradient(45deg, #2196F3, #21CBF3, #2196F3)',
   backgroundSize: '200% 200%',
   animation: `${shimmer} 3s ease-in-out infinite`,
   backgroundClip: 'text',
   WebkitBackgroundClip: 'text',
   color: 'transparent',
-  textShadow: '0 0 30px rgba(33, 150, 243, 0.5)',
+  textShadow: darkMode 
+    ? '0 0 30px rgba(33, 150, 243, 0.5)'
+    : '0 0 20px rgba(33, 150, 243, 0.3)',
   fontWeight: 'bold',
   textAlign: 'center',
   marginBottom: theme.spacing(4),
@@ -91,23 +102,31 @@ const GlowingTitle = styled(Typography)(({ theme }) => ({
   },
 }));
 
-const StyledTextField = styled(TextField)(({ theme }) => ({
+const StyledTextField = styled(TextField)(({ theme, darkMode }) => ({
   '& .MuiOutlinedInput-root': {
-    background: 'rgba(255, 255, 255, 0.05)',
+    background: darkMode 
+      ? 'rgba(255, 255, 255, 0.05)'
+      : 'rgba(255, 255, 255, 0.8)',
     backdropFilter: 'blur(10px)',
     borderRadius: '25px',
     transition: 'all 0.3s ease',
     '&:hover': {
-      background: 'rgba(255, 255, 255, 0.08)',
+      background: darkMode 
+        ? 'rgba(255, 255, 255, 0.08)'
+        : 'rgba(255, 255, 255, 0.9)',
       transform: 'translateY(-2px)',
       boxShadow: '0 8px 25px rgba(33, 150, 243, 0.2)',
     },
     '&.Mui-focused': {
-      background: 'rgba(255, 255, 255, 0.1)',
+      background: darkMode 
+        ? 'rgba(255, 255, 255, 0.1)'
+        : 'rgba(255, 255, 255, 0.95)',
       boxShadow: '0 0 20px rgba(33, 150, 243, 0.4)',
     },
     '& fieldset': {
-      borderColor: 'rgba(255, 255, 255, 0.2)',
+      borderColor: darkMode 
+        ? 'rgba(255, 255, 255, 0.2)'
+        : 'rgba(0, 0, 0, 0.2)',
     },
     '&:hover fieldset': {
       borderColor: 'rgba(33, 150, 243, 0.5)',
@@ -117,20 +136,32 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
     },
   },
   '& .MuiInputBase-input': {
-    color: '#fff',
+    color: darkMode ? '#fff' : '#333',
     fontSize: '1.1rem',
   },
   '& .MuiInputLabel-root': {
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: darkMode 
+      ? 'rgba(255, 255, 255, 0.7)'
+      : 'rgba(0, 0, 0, 0.7)',
   },
 }));
 
-const CategoryChip = styled(Chip)(({ theme, selected }) => ({
+const CategoryChip = styled(Chip)(({ theme, selected, darkMode }) => ({
   background: selected 
     ? 'linear-gradient(45deg, #2196F3, #21CBF3)'
-    : 'rgba(255, 255, 255, 0.1)',
-  color: selected ? '#fff' : 'rgba(255, 255, 255, 0.8)',
-  border: selected ? 'none' : '1px solid rgba(255, 255, 255, 0.2)',
+    : darkMode 
+      ? 'rgba(255, 255, 255, 0.1)'
+      : 'rgba(255, 255, 255, 0.8)',
+  color: selected 
+    ? '#fff' 
+    : darkMode 
+      ? 'rgba(255, 255, 255, 0.8)'
+      : 'rgba(0, 0, 0, 0.8)',
+  border: selected 
+    ? 'none' 
+    : darkMode 
+      ? '1px solid rgba(255, 255, 255, 0.2)'
+      : '1px solid rgba(0, 0, 0, 0.1)',
   backdropFilter: 'blur(10px)',
   fontWeight: selected ? 'bold' : 'normal',
   transition: 'all 0.3s ease',
@@ -144,16 +175,22 @@ const CategoryChip = styled(Chip)(({ theme, selected }) => ({
   },
 }));
 
-const ToolCard = styled(Card)(({ theme }) => ({
-  background: 'rgba(255, 255, 255, 0.05)',
+const ToolCard = styled(Card)(({ theme, darkMode }) => ({
+  background: darkMode 
+    ? 'rgba(255, 255, 255, 0.05)'
+    : 'rgba(255, 255, 255, 0.9)',
   backdropFilter: 'blur(15px)',
-  border: '1px solid rgba(255, 255, 255, 0.1)',
+  border: darkMode 
+    ? '1px solid rgba(255, 255, 255, 0.1)'
+    : '1px solid rgba(0, 0, 0, 0.1)',
   borderRadius: '20px',
   transition: 'all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
   animation: `${float} 6s ease-in-out infinite`,
   '&:hover': {
     transform: 'translateY(-10px) scale(1.02)',
-    background: 'rgba(255, 255, 255, 0.08)',
+    background: darkMode 
+      ? 'rgba(255, 255, 255, 0.08)'
+      : 'rgba(255, 255, 255, 0.95)',
     border: '1px solid rgba(33, 150, 243, 0.3)',
     boxShadow: '0 20px 40px rgba(33, 150, 243, 0.2)',
     '& .tool-icon': {
@@ -203,6 +240,8 @@ const FilterContainer = styled(Paper)(({ theme }) => ({
 }));
 
 const ToolList = () => {
+  const { darkMode } = useTheme();
+  const navigate = useNavigate();
   const [tools, setTools] = useState([]);
   const [filteredTools, setFilteredTools] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -214,6 +253,7 @@ const ToolList = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+  const [toolRatings, setToolRatings] = useState({});
 
   const categories = ["All", "Writing", "Design", "Audio", "Chatbots", "Coding", "PPT", "Video"];
 
@@ -277,6 +317,9 @@ const ToolList = () => {
         if (bookmarksError) throw bookmarksError;
         setBookmarks(new Set(bookmarksData.map(b => b.tool_id)));
 
+        // Fetch ratings for all tools
+        await fetchToolRatings(toolsData || []);
+
       } catch (error) {
         console.error("Error fetching data:", error.message);
       } finally {
@@ -289,6 +332,26 @@ const ToolList = () => {
     fetchToolsAndBookmarks();
   }, [user]);
 
+  const fetchToolRatings = async (toolsList) => {
+    try {
+      const ratings = {};
+      for (const tool of toolsList) {
+        const { data: ratingData } = await supabase
+          .rpc('get_tool_average_rating', { tool_uuid: tool.id });
+        const { data: countData } = await supabase
+          .rpc('get_tool_review_count', { tool_uuid: tool.id });
+        
+        ratings[tool.id] = {
+          average: ratingData || 0,
+          count: countData || 0
+        };
+      }
+      setToolRatings(ratings);
+    } catch (error) {
+      console.error("Error fetching ratings:", error);
+    }
+  };
+
   const handleSnackbarClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
@@ -297,47 +360,75 @@ const ToolList = () => {
   };
 
   const handleBookmarkToggle = async (toolId) => {
-    if (!user) {
-      setSnackbarMessage("You must be logged in to bookmark tools.");
-      setSnackbarSeverity("error");
-      setSnackbarOpen(true);
-      return;
-    }
-
-    const isBookmarked = bookmarks.has(toolId);
-    const newBookmarks = new Set(bookmarks);
-
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setSnackbarMessage("Please log in to bookmark tools");
+        setSnackbarSeverity("warning");
+        setSnackbarOpen(true);
+        return;
+      }
+
+      const isBookmarked = bookmarks.has(toolId);
+      
       if (isBookmarked) {
         // Remove bookmark
         const { error } = await supabase
-          .from("bookmarks")
+          .from('bookmarks')
           .delete()
-          .match({ user_id: user.id, tool_id: toolId });
+          .eq('user_id', user.id)
+          .eq('tool_id', toolId);
 
         if (error) throw error;
-        newBookmarks.delete(toolId);
-        setSnackbarMessage("Bookmark removed!");
+        
+        setBookmarks(prev => {
+          const newBookmarks = new Set(prev);
+          newBookmarks.delete(toolId);
+          return newBookmarks;
+        });
+        
+        setSnackbarMessage("Removed from bookmarks");
         setSnackbarSeverity("info");
+        
+        // Track bookmark removal
+        await analyticsService.trackBookmark(toolId);
       } else {
         // Add bookmark
         const { error } = await supabase
-          .from("bookmarks")
-          .insert({ user_id: user.id, tool_id: toolId });
+          .from('bookmarks')
+          .insert([
+            { user_id: user.id, tool_id: toolId }
+          ]);
 
         if (error) throw error;
-        newBookmarks.add(toolId);
-        setSnackbarMessage("Added to bookmarks!");
+        
+        setBookmarks(prev => new Set([...prev, toolId]));
+        setSnackbarMessage("Added to bookmarks");
         setSnackbarSeverity("success");
+        
+        // Track bookmark addition
+        await analyticsService.trackBookmark(toolId);
       }
-      setBookmarks(newBookmarks);
     } catch (error) {
-      console.error("Error toggling bookmark:", error.message);
-      setSnackbarMessage("Error updating bookmark.");
+      console.error('Error toggling bookmark:', error);
+      setSnackbarMessage("Error updating bookmark");
       setSnackbarSeverity("error");
     } finally {
       setSnackbarOpen(true);
     }
+  };
+
+  const handleViewDetails = async (toolId) => {
+    // Track tool view
+    await analyticsService.trackToolView(toolId);
+    navigate(`/tool/${toolId}`);
+  };
+
+  const handleVisitWebsite = async (toolId, websiteUrl) => {
+    // Track website visit
+    await analyticsService.trackWebsiteVisit(toolId);
+    // Open website in new tab
+    window.open(websiteUrl, '_blank', 'noopener,noreferrer');
   };
 
   // 🔍 Handle filtering and search
@@ -365,82 +456,55 @@ const ToolList = () => {
   };
 
   return (
-    <StyledContainer maxWidth="xl">
-      <Fade in timeout={1000}>
-        <Box>
-          <GlowingTitle variant="h2" component="h1">
-            <AutoAwesomeIcon sx={{ fontSize: '2rem', mr: 2, verticalAlign: 'middle' }} />
-            AI Tools Collection
-          </GlowingTitle>
-        </Box>
-      </Fade>
+    <StyledContainer maxWidth="lg" darkMode={darkMode}>
+      <GlowingTitle 
+        variant="h3" 
+        component="h2" 
+        darkMode={darkMode}
+        sx={{ fontSize: { xs: '2rem', md: '3rem' } }}
+      >
+        Discover AI Tools
+      </GlowingTitle>
 
-      <Fade in timeout={1200} style={{ transitionDelay: '200ms' }}>
-        <FilterContainer elevation={0}>
-          {/* 🔍 Search Input */}
-          <Box sx={{ mb: 4 }}>
-            <StyledTextField
-              fullWidth
-              variant="outlined"
-              placeholder="Search for AI tools..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon sx={{ color: 'rgba(255, 255, 255, 0.5)' }} />
-                  </InputAdornment>
-                ),
-              }}
-              sx={{ maxWidth: 600, mx: 'auto', display: 'block' }}
+      {/* Search and Filter Section */}
+      <Box sx={{ mb: 6 }}>
+        <StyledTextField
+          fullWidth
+          variant="outlined"
+          placeholder="Search AI tools..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          darkMode={darkMode}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon sx={{ color: darkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)' }} />
+              </InputAdornment>
+            ),
+          }}
+          sx={{ mb: 3 }}
+        />
+
+        {/* Category Filters */}
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, justifyContent: 'center' }}>
+          {categories.map((category) => (
+            <CategoryChip
+              key={category}
+              label={`${category} (${getCategoryCount(category)})`}
+              onClick={() => setSelectedCategory(selectedCategory === category ? null : category)}
+              selected={selectedCategory === category}
+              darkMode={darkMode}
+              clickable
             />
-          </Box>
-
-          {/* 🏷️ Category Filters */}
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-            <FilterListIcon sx={{ color: 'rgba(255, 255, 255, 0.7)', mr: 2 }} />
-            <Typography variant="h6" sx={{ color: 'rgba(255, 255, 255, 0.8)', mr: 3 }}>
-              Categories:
-            </Typography>
-          </Box>
-          
-          <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap', justifyContent: 'center' }}>
-            {categories.map((category, index) => (
-              <Zoom 
-                key={category} 
-                in={showContent} 
-                timeout={800} 
-                style={{ transitionDelay: `${index * 100}ms` }}
-              >
-                <Badge 
-                  badgeContent={getCategoryCount(category)} 
-                  color="primary"
-                  sx={{
-                    '& .MuiBadge-badge': {
-                      background: 'linear-gradient(45deg, #FF6B6B, #FF8E53)',
-                      fontWeight: 'bold',
-                    },
-                  }}
-                >
-                  <CategoryChip
-                    icon={<CategoryIcon />}
-                    label={category}
-                    selected={selectedCategory === category}
-                    onClick={() => setSelectedCategory(category)}
-                    clickable
-                  />
-                </Badge>
-              </Zoom>
-            ))}
-          </Box>
-        </FilterContainer>
-      </Fade>
+          ))}
+        </Box>
+      </Box>
 
       {/* 🔄 Loading */}
       {loading && (
         <LoadingContainer>
           <CircularProgress size={60} thickness={4} />
-          <Typography variant="h6" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+          <Typography variant="h6" sx={{ color: darkMode ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.8)' }}>
             Loading AI Tools...
           </Typography>
         </LoadingContainer>
@@ -456,7 +520,7 @@ const ToolList = () => {
                 height={300} 
                 sx={{ 
                   borderRadius: '20px',
-                  background: 'rgba(255, 255, 255, 0.05)',
+                  background: darkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)',
                 }} 
               />
             </Grid>
@@ -475,7 +539,7 @@ const ToolList = () => {
                   timeout={600} 
                   style={{ transitionDelay: `${index * 100}ms` }}
                 >
-                  <ToolCard elevation={0}>
+                  <ToolCard elevation={0} darkMode={darkMode}>
                     <CardContent sx={{ position: 'relative' }}>
                       <Tooltip title={bookmarks.has(tool.id) ? "Remove from Bookmarks" : "Add to Bookmarks"}>
                         <IconButton
@@ -500,7 +564,7 @@ const ToolList = () => {
                           variant="h5" 
                           component="h2" 
                           sx={{ 
-                            color: '#fff', 
+                            color: darkMode ? '#fff' : '#333', 
                             fontWeight: 'bold',
                             flex: 1,
                           }}
@@ -519,11 +583,22 @@ const ToolList = () => {
                           mb: 2,
                         }}
                       />
+
+                      {/* Rating Display */}
+                      <Box sx={{ mb: 2 }}>
+                        <Rating 
+                          value={toolRatings[tool.id]?.average || 0} 
+                          readOnly 
+                          showCount 
+                          reviewCount={toolRatings[tool.id]?.count || 0}
+                          size="small"
+                        />
+                      </Box>
                       
                       <Typography 
                         variant="body2" 
                         sx={{ 
-                          color: 'rgba(255, 255, 255, 0.8)',
+                          color: darkMode ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.8)',
                           lineHeight: 1.6,
                           minHeight: '60px',
                         }}
@@ -533,17 +608,24 @@ const ToolList = () => {
                     </CardContent>
                     
                     <CardActions sx={{ p: 3, pt: 0 }}>
-                      <StyledButton
-                        fullWidth
-                        variant="contained"
-                        endIcon={<LaunchIcon />}
-                        component="a"
-                        href={tool.website_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Visit Website
-                      </StyledButton>
+                      <Box sx={{ display: 'flex', gap: 1, width: '100%' }}>
+                        <StyledButton
+                          variant="outlined"
+                          startIcon={<VisibilityIcon />}
+                          onClick={() => handleViewDetails(tool.id)}
+                          sx={{ flex: 1 }}
+                        >
+                          View Details
+                        </StyledButton>
+                        <StyledButton
+                          variant="contained"
+                          endIcon={<LaunchIcon />}
+                          onClick={() => handleVisitWebsite(tool.id, tool.website_url)}
+                          sx={{ flex: 1 }}
+                        >
+                          Visit
+                        </StyledButton>
+                      </Box>
                     </CardActions>
                   </ToolCard>
                 </Zoom>
@@ -556,14 +638,14 @@ const ToolList = () => {
                   <AutoAwesomeIcon 
                     sx={{ 
                       fontSize: '4rem', 
-                      color: 'rgba(255, 255, 255, 0.3)',
+                      color: darkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)',
                       mb: 2,
                     }} 
                   />
                   <Typography 
                     variant="h5" 
                     sx={{ 
-                      color: 'rgba(255, 255, 255, 0.6)',
+                      color: darkMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.6)',
                       mb: 1,
                     }}
                   >
@@ -571,7 +653,7 @@ const ToolList = () => {
                   </Typography>
                   <Typography 
                     variant="body1" 
-                    sx={{ color: 'rgba(255, 255, 255, 0.4)' }}
+                    sx={{ color: darkMode ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.4)' }}
                   >
                     Try adjusting your search or category filter
                   </Typography>
@@ -581,6 +663,7 @@ const ToolList = () => {
           )}
         </Grid>
       )}
+
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={4000}
