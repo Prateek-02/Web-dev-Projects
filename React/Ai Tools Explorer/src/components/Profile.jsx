@@ -25,9 +25,11 @@ import {
   VisibilityOff,
   Edit,
   Security,
-  AccountCircle
+  AccountCircle,
+  ArrowBack
 } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
+import { useNavigate } from "react-router-dom";
 
 const GradientBox = styled(Box)(({ theme }) => ({
   background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -105,6 +107,7 @@ const Profile = () => {
   const [alertMsg, setAlertMsg] = useState(null);
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -144,6 +147,23 @@ const Profile = () => {
       py: 4
     }}>
       <Container maxWidth="sm">
+        {/* Go Back Button */}
+        <Box sx={{ mb: 2 }}>
+          <Button
+            startIcon={<ArrowBack />}
+            variant="text"
+            color="primary"
+            onClick={() => navigate("/home")}
+            sx={{
+              textTransform: "none",
+              fontWeight: 500,
+              fontSize: "1rem",
+              mb: 1,
+            }}
+          >
+            Back to Home
+          </Button>
+        </Box>
         {/* Header Section */}
         <GradientBox>
           <Box sx={{ position: 'relative', zIndex: 1 }}>
@@ -326,8 +346,6 @@ const Profile = () => {
             </Box>
           </Stack>
         </StyledPaper>
-
-        
       </Container>
     </Box>
   );

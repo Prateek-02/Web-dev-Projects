@@ -36,7 +36,7 @@ import {
 } from '@mui/icons-material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 // Initialize Supabase client
-import { supabase } from '../supabaseClient';
+import { supabase } from '../supabaseClient.js';
 
 // Google Identity Services loader
 const loadGoogleScript = () => {
@@ -65,7 +65,7 @@ export default function Register() {
   const [showAlert, setShowAlert] = useState(false);
   const [alertType, setAlertType] = useState('success');
   const [alertMessage, setAlertMessage] = useState('');
-  const [termsAccepted, setTermsAccepted] = useState(false);
+
 
   // Google One Tap state
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -130,10 +130,7 @@ export default function Register() {
       return false;
     }
 
-    if (!termsAccepted) {
-      showAlertMessage('error', 'Please accept the terms and conditions');
-      return false;
-    }
+    
 
     return true;
   };
@@ -659,28 +656,7 @@ export default function Register() {
                     }}
                   />
 
-                  {/* Terms and Conditions */}
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={termsAccepted}
-                        onChange={(e) => setTermsAccepted(e.target.checked)}
-                        color="primary"
-                      />
-                    }
-                    label={
-                      <Typography variant="body2">
-                        I agree to the{' '}
-                        <Link href="#" color="primary" sx={{ fontWeight: 600 }}>
-                          Terms of Service
-                        </Link>
-                        {' '}and{' '}
-                        <Link href="#" color="primary" sx={{ fontWeight: 600 }}>
-                          Privacy Policy
-                        </Link>
-                      </Typography>
-                    }
-                  />
+                  
 
                   {/* Register Button */}
                   <Button

@@ -5,6 +5,9 @@ import Login from './components/Login';
 import Register from './components/Register';
 import Home from './components/Home';
 import Profile from './components/Profile'; // ✅ Import this
+import ForgotPassword from './components/ForgotPassword';
+import ResetPassword from './components/ResetPassword';
+import Bookmarks from './components/Bookmarks';
 
 const theme = createTheme({
   palette: {
@@ -30,6 +33,9 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/profile" element={<Profile />} /> {/* ✅ Add route */}
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/bookmarks" element={<Bookmarks />} />
         </Routes>
       </Router>
     </ThemeProvider>

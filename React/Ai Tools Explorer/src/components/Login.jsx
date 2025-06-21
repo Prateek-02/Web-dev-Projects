@@ -31,7 +31,7 @@ import {
 } from '@mui/icons-material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
-import { supabase } from '../supabaseClient';
+import { supabase } from '../supabaseClient.js';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -73,19 +73,33 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
+    setShowAlert(false);
+  
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+  
+      if (error) {
+        console.error("Login failed:", error.message);
+        alert("Invalid credentials. Please try again.");
+        setIsLoading(false);
+        return;
+      }
+  
+      // ✅ Success — set alert and redirect
       setShowAlert(true);
-      console.log('Login attempt with:', { email, password });
-
-      // Redirect to home after login
       setTimeout(() => {
         setShowAlert(false);
-        navigate('/home'); // Redirect to home page
+        navigate("/home");
       }, 1000);
-    }, 2000);
+    } catch (err) {
+      console.error("Unexpected error:", err.message);
+      alert("Unexpected error during login.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // --- Google Sign-In logic (like Register page) ---
@@ -537,7 +551,8 @@ export default function Login() {
                   {/* Footer Links */}
                   <Stack spacing={2} textAlign="center" sx={{ mt: 3 }}>
                     <Link
-                      href="#"
+                      component={RouterLink}
+                      to="/forgot-password"
                       color="primary"
                       sx={{
                         textDecoration: 'none',
