@@ -37,6 +37,7 @@ import {
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 // Initialize Supabase client
 import { supabase } from '../supabaseClient.js';
+import { GOOGLE_CLIENT_ID } from '../config/env.js';
 import ThemeToggle from './ThemeToggle';
 
 // Google Identity Services loader
@@ -201,7 +202,7 @@ export default function Register() {
     googleBtnRef.current.innerHTML = '';
 
     window.google.accounts.id.initialize({
-      client_id: '663732832122-em3m7djoa0rl09jam6htka8pae4v92gq.apps.googleusercontent.com', // <-- Replace with your Google client ID
+      client_id: GOOGLE_CLIENT_ID,
       callback: handleGoogleCredentialResponse,
       ux_mode: 'popup',
     });

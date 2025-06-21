@@ -32,6 +32,7 @@ import {
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../supabaseClient.js';
+import { GOOGLE_CLIENT_ID } from '../config/env.js';
 import ThemeToggle from './ThemeToggle';
 
 export default function Login() {
@@ -109,9 +110,6 @@ export default function Login() {
 
   const googleBtnRef = useRef(null);
   const [googleBtnRendered, setGoogleBtnRendered] = useState(false);
-
-  // Google Client ID (should match the one in Register page)
-  const GOOGLE_CLIENT_ID = '663732832122-em3m7djoa0rl09jam6htka8pae4v92gq.apps.googleusercontent.com';
 
   // Load Google script and render button on mount (once)
   useEffect(() => {
