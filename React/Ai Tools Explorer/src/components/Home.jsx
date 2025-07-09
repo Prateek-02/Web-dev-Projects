@@ -15,7 +15,6 @@ import {
   Zoom, 
   Chip,
   Paper,
-  Backdrop
 } from "@mui/material";
 import { styled, keyframes } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
@@ -143,40 +142,43 @@ const Home = () => {
   const [user, setUser] = useState(null);
   const [showContent, setShowContent] = useState(false);
   const navigate = useNavigate();
-
   const open = Boolean(anchorEl);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user);
-    });
-    
-    // Trigger content animation
+    const fetchUser = async () => {
+      const { data: authData } = await supabase.auth.getUser();
+      const user = authData?.user;
+      if (user) {
+        const { data: profileData, error: profileError } = await supabase
+          .from("profiles")
+          .select("name")
+          .eq("id", user.id)
+          .single();
+
+        if (profileError) {
+          console.error("Error fetching profile:", profileError);
+          setUser(user); // fallback
+        } else {
+          setUser({
+            ...user,
+            name: profileData?.name || null,
+          });
+        }
+      }
+    };
+
+    fetchUser();
+
     const timer = setTimeout(() => setShowContent(true), 300);
     return () => clearTimeout(timer);
   }, []);
 
-  const handleMenu = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
+  const handleMenu = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
 
-  const handleProfile = () => {
-    handleClose();
-    navigate("/profile");
-  };
-
-  const handleBookmarks = () => {
-    handleClose();
-    navigate("/bookmarks");
-  };
-
-  const handleActivity = () => {
-    handleClose();
-    navigate("/activity");
-  };
-
+  const handleProfile = () => { handleClose(); navigate("/profile"); };
+  const handleBookmarks = () => { handleClose(); navigate("/bookmarks"); };
+  const handleActivity = () => { handleClose(); navigate("/activity"); };
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate("/login");
@@ -184,35 +186,25 @@ const Home = () => {
 
   return (
     <HeroContainer>
-      {/* Enhanced Header with Profile Icon and Theme Toggle */}
+      {/* Header */}
       <HeaderContainer>
-        {/* Theme Toggle on the left */}
         <Fade in={true} timeout={800}>
           <Box>
             <ThemeToggle />
           </Box>
         </Fade>
 
-        {/* User Profile on the right */}
         {user && (
           <Fade in={!!user} timeout={800}>
             <Box>
-              <IconButton 
-                onClick={handleMenu}
-                sx={{ 
-                  padding: 1,
-                  '&:hover': {
-                    background: 'rgba(255, 255, 255, 0.1)',
-                  }
-                }}
-              >
+              <IconButton onClick={handleMenu} sx={{ padding: 1, '&:hover': { background: 'rgba(255, 255, 255, 0.1)' } }}>
                 <StyledAvatar>
-                  {user.email[0]?.toUpperCase()}
+                  {user.name ? user.name[0]?.toUpperCase() : user.email[0]?.toUpperCase()}
                 </StyledAvatar>
               </IconButton>
-              <StyledMenu 
-                anchorEl={anchorEl} 
-                open={open} 
+              <StyledMenu
+                anchorEl={anchorEl}
+                open={open}
                 onClose={handleClose}
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
@@ -245,19 +237,14 @@ const Home = () => {
         )}
       </HeaderContainer>
 
-      {/* Enhanced Hero Section */}
+      {/* Hero Content */}
       <Container maxWidth="lg" sx={{ flex: 1, display: 'flex', alignItems: 'center' }}>
         <Box sx={{ width: '100%', textAlign: 'center', py: 6 }}>
           <Zoom in={showContent} timeout={1000}>
             <FloatingPaper elevation={0} sx={{ mb: 4, mx: 'auto', maxWidth: '800px' }}>
               <Box sx={{ mb: 2 }}>
-                <GlowingChip 
-                  label="✨ AI-Powered Excellence" 
-                  size="medium"
-                  sx={{ mb: 3 }}
-                />
+                <GlowingChip label="✨ AI-Powered Excellence" size="medium" sx={{ mb: 3 }} />
               </Box>
-              
               <ShimmerText
                 variant="h2"
                 component="h1"
@@ -270,7 +257,6 @@ const Home = () => {
               >
                 Explore the Best AI Tools
               </ShimmerText>
-              
               <Typography
                 variant="h6"
                 sx={{
@@ -307,13 +293,12 @@ const Home = () => {
               >
                 Your One Stop for all AI&apos;s
               </Typography>
-              
               <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mt: 3 }}>
                 {['Productivity', 'Creativity', 'Innovation'].map((tag, index) => (
-                  <Fade 
-                    key={tag} 
-                    in={showContent} 
-                    timeout={1000} 
+                  <Fade
+                    key={tag}
+                    in={showContent}
+                    timeout={1000}
                     style={{ transitionDelay: `${800 + index * 200}ms` }}
                   >
                     <Chip

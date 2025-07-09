@@ -14,7 +14,9 @@ const pulse = keyframes`
   50% { transform: scale(1.1); }
 `;
 
-const StyledIconButton = styled(IconButton)(({ theme, darkMode }) => ({
+const StyledIconButton = styled(IconButton, {
+  shouldForwardProp: (prop) => prop !== 'darkMode'
+})(({ theme, darkMode }) => ({
   position: 'relative',
   background: darkMode 
     ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'

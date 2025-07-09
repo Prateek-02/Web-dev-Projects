@@ -255,7 +255,7 @@ const ToolList = () => {
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   const [toolRatings, setToolRatings] = useState({});
 
-  const categories = ["All", "Writing", "Design", "Audio", "Chatbots", "Coding", "PPT", "Video"];
+  const categories = ["All", "Writing", "Design", "Audio", "Chatbots", "Coding", "PPT", "Video","Education","Data & Analytics","Transcription","Social Media","Image Tools","Marketing & SEO","Research","Productivity"];
 
   // ✅ Check session on mount and subscribe to auth changes
   useEffect(() => {

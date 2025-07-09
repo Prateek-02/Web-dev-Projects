@@ -183,6 +183,16 @@ export default function Register() {
       }
   
       // ✅ Redirect to login page
+      // Insert user profile into 'profiles' table
+      if (user) {
+        await supabase.from('profiles').insert([
+          {
+            id: user.id,
+            email: user.email,
+            name: user.user_metadata?.name || '',
+          },
+        ]);
+      }
       navigate('/login');
     } catch (err) {
       console.error("Unexpected error:", err.message);

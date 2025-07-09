@@ -79,3 +79,31 @@ BEGIN
     RETURN review_count;
 END;
 $$ LANGUAGE plpgsql; 
+
+-- Profiles table for user profile data
+CREATE TABLE IF NOT EXISTS profiles (
+    id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+    email TEXT UNIQUE NOT NULL,
+    name TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Enable Row Level Security (RLS)
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+
+-- RLS Policies
+-- Users can view their own profile
+CREATE POLICY "Users can view their own profile" ON profiles
+    FOR SELECT USING (auth.uid() = id);
+
+-- Users can insert their own profile
+CREATE POLICY "Users can insert their own profile" ON profiles
+    FOR INSERT WITH CHECK (auth.uid() = id);
+
+-- Users can update their own profile
+CREATE POLICY "Users can update their own profile" ON profiles
+    FOR UPDATE USING (auth.uid() = id);
+
+-- Users can delete their own profile
+CREATE POLICY "Users can delete their own profile" ON profiles
+    FOR DELETE USING (auth.uid() = id); 

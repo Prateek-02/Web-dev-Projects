@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
-import { 
-  TextField, 
-  Button, 
-  Container, 
-  Typography, 
-  Stack, 
+import {
+  TextField,
+  Button,
+  Container,
+  Typography,
+  Stack,
   Alert,
   Paper,
   Box,
@@ -14,8 +14,6 @@ import {
   InputAdornment,
   IconButton,
   Fade,
-  Card,
-  CardContent
 } from "@mui/material";
 import {
   Person,
@@ -26,79 +24,89 @@ import {
   Edit,
   Security,
   AccountCircle,
-  ArrowBack
+  ArrowBack,
 } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 
+// Gradient and Styled Components (unchanged)
 const GradientBox = styled(Box)(({ theme }) => ({
-  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+  background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
   borderRadius: theme.spacing(3),
   padding: theme.spacing(4),
-  color: 'white',
+  color: "white",
   marginBottom: theme.spacing(3),
-  position: 'relative',
-  overflow: 'hidden',
-  '&::before': {
+  position: "relative",
+  overflow: "hidden",
+  "&::before": {
     content: '""',
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    background: 'rgba(255, 255, 255, 0.1)',
-    backdropFilter: 'blur(10px)',
-  }
+    background: "rgba(255, 255, 255, 0.1)",
+  },
 }));
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4),
   borderRadius: theme.spacing(3),
-  background: 'rgba(255, 255, 255, 0.9)',
-  backdropFilter: 'blur(10px)',
-  border: '1px solid rgba(255, 255, 255, 0.2)',
-  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+  background: "rgba(255, 255, 255, 0.9)",
+  backdropFilter: "blur(10px)",
+  border: "1px solid rgba(255, 255, 255, 0.2)",
+  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
 }));
 
 const AnimatedButton = styled(Button)(({ theme }) => ({
   borderRadius: theme.spacing(2),
   padding: theme.spacing(1.5, 4),
-  textTransform: 'none',
+  textTransform: "none",
   fontWeight: 600,
-  fontSize: '1rem',
-  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-  '&:hover': {
-    transform: 'translateY(-2px)',
-    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.15)',
+  fontSize: "1rem",
+  transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+  "&:hover": {
+    transform: "translateY(-2px)",
+    boxShadow: "0 8px 25px rgba(0, 0, 0, 0.15)",
   },
-  '&:active': {
-    transform: 'translateY(0)',
-  }
+  "&:active": {
+    transform: "translateY(0)",
+  },
 }));
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
-  '& .MuiOutlinedInput-root': {
+  "& .MuiOutlinedInput-root": {
     borderRadius: theme.spacing(2),
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    transition: 'all 0.3s ease',
-    '&:hover': {
-      backgroundColor: 'rgba(255, 255, 255, 0.95)',
-      '& .MuiOutlinedInput-notchedOutline': {
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
+    transition: "all 0.3s ease",
+    "&:hover": {
+      backgroundColor: "rgba(255, 255, 255, 0.95)",
+      "& .MuiOutlinedInput-notchedOutline": {
         borderColor: theme.palette.primary.main,
         borderWidth: 2,
-      }
+      },
     },
-    '&.Mui-focused': {
-      backgroundColor: 'white',
-      '& .MuiOutlinedInput-notchedOutline': {
+    "&.Mui-focused": {
+      backgroundColor: "white",
+      "& .MuiOutlinedInput-notchedOutline": {
         borderColor: theme.palette.primary.main,
         borderWidth: 2,
-      }
-    }
+      },
+    },
+    "& .MuiInputBase-input": {
+      color: "#000",
+    },
   },
-  '& .MuiInputLabel-root': {
+  "& .MuiInputLabel-root": {
     fontWeight: 500,
-  }
+    color: "#000",
+  },
+  "& .MuiInputLabel-shrink": {
+    color: "#000",
+  },
+  "& .MuiFormHelperText-root": {
+    color: "#000",
+  },
 }));
 
 const Profile = () => {
@@ -110,16 +118,39 @@ const Profile = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user);
-      setName(data.user.user_metadata?.name || "");
-    });
+    const fetchProfile = async () => {
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+
+      if (userError) {
+        setAlertMsg({ type: "error", text: userError.message });
+        return;
+      }
+
+      setUser(userData.user);
+
+      const { data: profileData, error: profileError } = await supabase
+        .from("profiles")
+        .select("name")
+        .eq("id", userData.user.id)
+        .single();
+
+      if (profileError) {
+        setAlertMsg({ type: "error", text: profileError.message });
+      } else {
+        setName(profileData?.name || "");
+      }
+    };
+
+    fetchProfile();
   }, []);
 
   const updateProfile = async () => {
-    const { error } = await supabase.auth.updateUser({
-      data: { name },
-    });
+    if (!user) return;
+
+    const { error } = await supabase
+      .from("profiles")
+      .update({ name })
+      .eq("id", user.id);
 
     if (error) {
       setAlertMsg({ type: "error", text: error.message });
@@ -137,17 +168,19 @@ const Profile = () => {
       setAlertMsg({ type: "error", text: error.message });
     } else {
       setAlertMsg({ type: "success", text: "Password updated successfully!" });
+      setPassword("");
     }
   };
 
   return (
-    <Box sx={{ 
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
-      py: 4
-    }}>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
+        py: 4,
+      }}
+    >
       <Container maxWidth="sm">
-        {/* Go Back Button */}
         <Box sx={{ mb: 2 }}>
           <Button
             startIcon={<ArrowBack />}
@@ -164,60 +197,48 @@ const Profile = () => {
             Back to Home
           </Button>
         </Box>
-        {/* Header Section */}
+
         <GradientBox>
-          <Box sx={{ position: 'relative', zIndex: 1 }}>
-            <Stack direction="column" alignItems="center" spacing={2}>
-              <Avatar
-                sx={{
-                  width: 80,
-                  height: 80,
-                  bgcolor: 'rgba(255, 255, 255, 0.2)',
-                  border: '3px solid rgba(255, 255, 255, 0.3)',
-                  fontSize: '2rem'
-                }}
-              >
-                <AccountCircle sx={{ fontSize: '3rem' }} />
-              </Avatar>
-              <Typography variant="h4" fontWeight="bold" textAlign="center">
-                Profile Settings
-              </Typography>
-              <Typography variant="body1" sx={{ opacity: 0.9, textAlign: 'center' }}>
-                Manage your account information
-              </Typography>
-            </Stack>
-          </Box>
+          <Stack direction="column" alignItems="center" spacing={2}>
+            <Avatar
+              sx={{
+                width: 80,
+                height: 80,
+                bgcolor: "rgba(255, 255, 255, 0.2)",
+                border: "3px solid rgba(255, 255, 255, 0.3)",
+                fontSize: "2rem",
+              }}
+            >
+              <AccountCircle sx={{ fontSize: "3rem" }} />
+            </Avatar>
+            <Typography variant="h4" fontWeight="bold" textAlign="center">
+              Profile Settings
+            </Typography>
+            <Typography
+              variant="body1"
+              sx={{ opacity: 0.9, textAlign: "center" }}
+            >
+              Manage your account information
+            </Typography>
+          </Stack>
         </GradientBox>
 
-        {/* Alert Section */}
         <Fade in={!!alertMsg} timeout={500}>
           <Box sx={{ mb: 3 }}>
             {alertMsg && (
-              <Alert 
-                severity={alertMsg.type} 
-                sx={{ 
-                  borderRadius: 2,
-                  fontSize: '1rem',
-                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
-                  '& .MuiAlert-icon': {
-                    fontSize: '1.5rem'
-                  }
-                }}
-                onClose={() => setAlertMsg(null)}
-              >
+              <Alert severity={alertMsg.type} onClose={() => setAlertMsg(null)}>
                 {alertMsg.text}
               </Alert>
             )}
           </Box>
         </Fade>
 
-        {/* Main Form */}
         <StyledPaper elevation={0}>
           <Stack spacing={4}>
-            {/* Personal Information Section */}
+            {/* Personal Information */}
             <Box>
               <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 3 }}>
-                <Person sx={{ color: 'primary.main', fontSize: '1.5rem' }} />
+                <Person sx={{ color: "primary.main", fontSize: "1.5rem" }} />
                 <Typography variant="h6" fontWeight="bold" color="primary">
                   Personal Information
                 </Typography>
@@ -227,11 +248,11 @@ const Profile = () => {
                 <StyledTextField
                   label="Email Address"
                   value={user?.email || ""}
-                  InputProps={{ 
+                  InputProps={{
                     readOnly: true,
                     startAdornment: (
                       <InputAdornment position="start">
-                        <Email sx={{ color: 'text.secondary' }} />
+                        <Email sx={{ color: "text.secondary" }} />
                       </InputAdornment>
                     ),
                   }}
@@ -246,14 +267,14 @@ const Profile = () => {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <Person sx={{ color: 'text.secondary' }} />
+                        <Person sx={{ color: "text.secondary" }} />
                       </InputAdornment>
                     ),
-                    endAdornment: name !== (user?.user_metadata?.name || "") && (
+                    endAdornment: name && (
                       <InputAdornment position="end">
-                        <Edit sx={{ color: 'primary.main', fontSize: '1.2rem' }} />
+                        <Edit sx={{ color: "primary.main", fontSize: "1.2rem" }} />
                       </InputAdornment>
-                    )
+                    ),
                   }}
                   fullWidth
                   placeholder="Enter your display name"
@@ -265,9 +286,9 @@ const Profile = () => {
                   onClick={updateProfile}
                   fullWidth
                   sx={{
-                    background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
-                    color: 'white',
-                    py: 1.5
+                    background: "linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)",
+                    color: "white",
+                    py: 1.5,
                   }}
                 >
                   Update Profile
@@ -275,17 +296,16 @@ const Profile = () => {
               </Stack>
             </Box>
 
-            {/* Divider */}
             <Divider sx={{ my: 2 }}>
               <Typography variant="body2" color="text.secondary" sx={{ px: 2 }}>
                 Security Settings
               </Typography>
             </Divider>
 
-            {/* Security Section */}
+            {/* Password Settings */}
             <Box>
               <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 3 }}>
-                <Security sx={{ color: 'error.main', fontSize: '1.5rem' }} />
+                <Security sx={{ color: "error.main", fontSize: "1.5rem" }} />
                 <Typography variant="h6" fontWeight="bold" color="error.main">
                   Password Settings
                 </Typography>
@@ -300,7 +320,7 @@ const Profile = () => {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <Lock sx={{ color: 'text.secondary' }} />
+                        <Lock sx={{ color: "text.secondary" }} />
                       </InputAdornment>
                     ),
                     endAdornment: (
@@ -308,10 +328,6 @@ const Profile = () => {
                         <IconButton
                           onClick={() => setShowPassword(!showPassword)}
                           edge="end"
-                          sx={{ 
-                            color: 'text.secondary',
-                            '&:hover': { color: 'primary.main' }
-                          }}
                         >
                           {showPassword ? <VisibilityOff /> : <Visibility />}
                         </IconButton>
@@ -330,14 +346,13 @@ const Profile = () => {
                   fullWidth
                   sx={{
                     borderWidth: 2,
-                    borderColor: 'error.main',
-                    color: 'error.main',
+                    borderColor: "error.main",
+                    color: "error.main",
                     py: 1.5,
-                    '&:hover': {
-                      borderWidth: 2,
-                      backgroundColor: 'error.main',
-                      color: 'white',
-                    }
+                    "&:hover": {
+                      backgroundColor: "error.main",
+                      color: "white",
+                    },
                   }}
                 >
                   Update Password
