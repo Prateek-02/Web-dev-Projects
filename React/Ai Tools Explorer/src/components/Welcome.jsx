@@ -12,25 +12,18 @@ import {
   Slide,
   Card,
   CardContent,
-  IconButton,
+  useTheme,
 } from '@mui/material';
 import { useState, useEffect } from 'react';
 import {
   AutoAwesome,
-  Psychology,
-  Memory,
-  Speed,
   Star,
   TrendingUp,
-  Security,
-  CloudQueue,
   Search,
   Favorite,
   SmartToy,
   Visibility,
-  Filter,
   Rocket,
-  Lightbulb,
   Analytics,
   ArrowForward,
 } from '@mui/icons-material';
@@ -42,6 +35,9 @@ export default function Welcome() {
   const [currentFeature, setCurrentFeature] = useState(0);
   const [hoveredButton, setHoveredButton] = useState(null);
   const [hoveredCard, setHoveredCard] = useState(null);
+
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
 
   const navigate = useNavigate();
 
@@ -95,14 +91,14 @@ export default function Welcome() {
       rating: 4.7,
       users: '5M+',
       description: 'AI pair programmer that helps you write code faster',
-      color: '#24292e',
+      color: '#24292h',
     },
   ];
 
   const stats = [
-    { number: '500+', label: 'AI Tools', icon: <Rocket /> },
-    { number: '50K+', label: 'Active Users', icon: <Analytics /> },
-    { number: '4.9★', label: 'User Rating', icon: <Star /> },
+    { number: '90+', label: 'AI Tools', icon: <Rocket /> },
+    { number: '5K+', label: 'Active Users', icon: <Analytics /> },
+    { number: '4.5★', label: 'User Rating', icon: <Star /> },
     { number: '24/7', label: 'Updated', icon: <TrendingUp /> },
   ];
 
@@ -121,6 +117,15 @@ export default function Welcome() {
   const handleLogin = () => {
     navigate('/login');
   };
+
+  // Card background colors for light/dark mode
+  const cardBg = isDark ? 'rgba(28,32,40,0.96)' : 'rgba(255,255,255,0.95)';
+  const cardBorder = isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.2)';
+  const cardShadow = isDark
+    ? (hovered => hovered ? '0 20px 40px rgba(0,0,0,0.4)' : '0 8px 24px rgba(0,0,0,0.25)')
+    : (hovered => hovered ? '0 20px 40px rgba(0,0,0,0.1)' : '0 8px 24px rgba(0,0,0,0.05)');
+  const cardHoverTransform = 'translateY(-8px)';
+  const cardTextColor = isDark ? 'rgba(255,255,255,0.95)' : undefined;
 
   return (
     <Box
@@ -307,9 +312,10 @@ export default function Welcome() {
               p: 4,
               mb: 8,
               borderRadius: 4,
-              background: 'rgba(255,255,255,0.95)',
+              background: isDark ? 'rgba(28,32,40,0.96)' : 'rgba(255,255,255,0.95)',
               backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255,255,255,0.2)',
+              border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.2)',
+              color: isDark ? 'rgba(255,255,255,0.95)' : undefined,
             }}
           >
             <Grid container spacing={4}>
@@ -377,15 +383,14 @@ export default function Welcome() {
                       onMouseLeave={() => setHoveredCard(null)}
                       sx={{
                         height: '100%',
-                        background: 'rgba(255,255,255,0.95)',
+                        background: cardBg,
                         backdropFilter: 'blur(20px)',
-                        border: '1px solid rgba(255,255,255,0.2)',
+                        border: cardBorder,
                         borderRadius: 3,
-                        transform: hoveredCard === index ? 'translateY(-8px)' : 'translateY(0)',
+                        color: cardTextColor,
+                        transform: hoveredCard === index ? cardHoverTransform : 'translateY(0)',
                         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                        boxShadow: hoveredCard === index 
-                          ? '0 20px 40px rgba(0,0,0,0.1)' 
-                          : '0 8px 24px rgba(0,0,0,0.05)',
+                        boxShadow: cardShadow(hoveredCard === index),
                       }}
                     >
                       <CardContent sx={{ p: 3 }}>
@@ -453,14 +458,17 @@ export default function Welcome() {
                     <Card
                       sx={{
                         height: '100%',
-                        background: 'rgba(255,255,255,0.95)',
+                        background: cardBg,
                         backdropFilter: 'blur(20px)',
-                        border: '1px solid rgba(255,255,255,0.2)',
+                        border: cardBorder,
                         borderRadius: 3,
+                        color: cardTextColor,
                         transition: 'all 0.3s ease',
                         '&:hover': {
                           transform: 'translateY(-4px)',
-                          boxShadow: '0 12px 32px rgba(0,0,0,0.1)',
+                          boxShadow: isDark
+                            ? '0 12px 32px rgba(0,0,0,0.4)'
+                            : '0 12px 32px rgba(0,0,0,0.1)',
                         },
                       }}
                     >

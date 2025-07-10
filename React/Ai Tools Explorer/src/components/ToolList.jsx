@@ -334,17 +334,22 @@ const ToolList = () => {
 
   const fetchToolRatings = async (toolsList) => {
     try {
+      // Fetch all reviews for all tools at once
+      const { data: reviews, error } = await supabase
+        .from('reviews')
+        .select('tool_id, rating');
+
+      if (error) throw error;
+
+      // Calculate average and count for each tool
       const ratings = {};
       for (const tool of toolsList) {
-        const { data: ratingData } = await supabase
-          .rpc('get_tool_average_rating', { tool_uuid: tool.id });
-        const { data: countData } = await supabase
-          .rpc('get_tool_review_count', { tool_uuid: tool.id });
-        
-        ratings[tool.id] = {
-          average: ratingData || 0,
-          count: countData || 0
-        };
+        const toolReviews = reviews.filter(r => r.tool_id === tool.id);
+        const count = toolReviews.length;
+        const average = count > 0
+          ? toolReviews.reduce((sum, r) => sum + r.rating, 0) / count
+          : 0;
+        ratings[tool.id] = { average, count };
       }
       setToolRatings(ratings);
     } catch (error) {
