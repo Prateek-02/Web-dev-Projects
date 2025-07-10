@@ -47,7 +47,7 @@ const StyledAvatar = styled(Avatar)(({ theme }) => ({
   fontWeight: 'bold',
 }));
 
-const ReviewsList = ({ toolId, toolName, onReviewUpdate }) => {
+const ReviewsList = ({ toolId, toolName, onReviewUpdate, refreshKey }) => {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
@@ -68,7 +68,7 @@ const ReviewsList = ({ toolId, toolName, onReviewUpdate }) => {
     if (toolId) {
       fetchReviews();
     }
-  }, [toolId]);
+  }, [toolId, refreshKey]);
 
   const fetchReviews = async () => {
     setLoading(true);

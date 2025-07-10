@@ -107,3 +107,8 @@ CREATE POLICY "Users can update their own profile" ON profiles
 -- Users can delete their own profile
 CREATE POLICY "Users can delete their own profile" ON profiles
     FOR DELETE USING (auth.uid() = id); 
+
+ALTER TABLE reviews
+ADD CONSTRAINT reviews_user_id_fkey
+FOREIGN KEY (user_id) REFERENCES profiles(id)
+ON DELETE CASCADE; 

@@ -84,6 +84,31 @@ export default function Register() {
   // Google button ref for rendering the button
   const googleBtnRef = useRef(null);
 
+  // --- FIX: Add renderGoogleButton with retry ---
+  const renderGoogleButton = () => {
+    if (!mounted || !googleBtnRef.current) return;
+    if (!window.google) {
+      // Retry after a short delay if script not loaded yet
+      setTimeout(renderGoogleButton, 200);
+      return;
+    }
+    setGoogleLoading(false);
+    googleBtnRef.current.innerHTML = '';
+    window.google.accounts.id.initialize({
+      client_id: GOOGLE_CLIENT_ID,
+      callback: handleGoogleCredentialResponse,
+      ux_mode: 'popup',
+    });
+    window.google.accounts.id.renderButton(googleBtnRef.current, {
+      theme: theme.palette.mode === 'dark' ? 'filled_black' : 'outline',
+      size: 'large',
+      text: 'signup_with',
+      shape: 'pill',
+      width: 340,
+      logo_alignment: 'left',
+    });
+  };
+
   useEffect(() => {
     setMounted(true);
     loadGoogleScript();
@@ -203,28 +228,7 @@ export default function Register() {
 
   // Google Sign Up Handler (render Google button as in login page)
   useEffect(() => {
-    if (!mounted) return;
-    if (!window.google || !googleBtnRef.current) return;
-
-    setGoogleLoading(false);
-
-    // Remove any previous button
-    googleBtnRef.current.innerHTML = '';
-
-    window.google.accounts.id.initialize({
-      client_id: GOOGLE_CLIENT_ID,
-      callback: handleGoogleCredentialResponse,
-      ux_mode: 'popup',
-    });
-
-    window.google.accounts.id.renderButton(googleBtnRef.current, {
-      theme: theme.palette.mode === 'dark' ? 'filled_black' : 'outline',
-      size: 'large',
-      text: 'signup_with',
-      shape: 'pill',
-      width: 340,
-      logo_alignment: 'left',
-    });
+    renderGoogleButton();
     // eslint-disable-next-line
   }, [mounted, theme.palette.mode]);
 
@@ -397,6 +401,7 @@ export default function Register() {
                           '&:hover': {
                             bgcolor: `${benefit.color}30`,
                             transform: 'translateY(-2px)',
+                            cursor: 'pointer',
                           },
                           transition: 'all 0.3s ease',
                         }}

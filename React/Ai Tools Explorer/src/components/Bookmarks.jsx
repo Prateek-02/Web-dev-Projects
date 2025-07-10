@@ -42,7 +42,7 @@ export default function Bookmarks() {
         .from("bookmarks")
         .select(`
           tool_id,
-          tools (
+          ai_tools:tool_id (
             id,
             name,
             description,
@@ -52,9 +52,8 @@ export default function Bookmarks() {
         `)
         .eq("user_id", user.id);
 
-      if (error) throw error;
-      
-      const tools = data.map(bookmark => bookmark.tools);
+      console.log('Bookmarks fetch result:', data, error);
+      const tools = data.map(bookmark => bookmark.ai_tools);
       setBookmarkedTools(tools);
     } catch (error) {
       console.error("Error fetching bookmarked tools:", error.message);

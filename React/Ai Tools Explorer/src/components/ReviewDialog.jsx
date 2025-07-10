@@ -96,7 +96,20 @@ const ReviewDialog = ({
     setError('');
 
     try {
-      if (existingReview) {
+      let reviewId = existingReview?.id;
+      // If no existingReview, check in DB for existing review
+      if (!reviewId) {
+        const { data: found, error: findError } = await supabase
+          .from('reviews')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('tool_id', tool.id)
+          .maybeSingle();
+        if (findError) throw findError;
+        if (found) reviewId = found.id;
+      }
+
+      if (reviewId) {
         // Update existing review
         const { error } = await supabase
           .from('reviews')
@@ -105,8 +118,7 @@ const ReviewDialog = ({
             comment: comment.trim(),
             updated_at: new Date().toISOString(),
           })
-          .eq('id', existingReview.id);
-
+          .eq('id', reviewId);
         if (error) throw error;
       } else {
         // Create new review
@@ -118,7 +130,6 @@ const ReviewDialog = ({
             rating,
             comment: comment.trim(),
           });
-
         if (error) throw error;
       }
 

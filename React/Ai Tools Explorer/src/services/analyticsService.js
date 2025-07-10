@@ -192,10 +192,6 @@ class AnalyticsService {
   async trackWebsiteVisit(toolId) {
     await this.trackToolClick(toolId, 'visit_website');
   }
-
-  async trackToolClick(toolId) {
-    await this.trackToolClick(toolId, 'click');
-  }
 }
 
 export const analyticsService = new AnalyticsService(); 

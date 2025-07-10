@@ -117,6 +117,7 @@ const ToolDetailPage = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+  const [reviewsRefreshKey, setReviewsRefreshKey] = useState(0);
 
   useEffect(() => {
     // Get current user
@@ -241,6 +242,7 @@ const ToolDetailPage = () => {
 
   const handleReviewSubmitted = () => {
     fetchToolDetails(); // Refresh tool details to update ratings
+    setReviewsRefreshKey((k) => k + 1); // Trigger ReviewsList to refresh
   };
 
   const handleWriteReview = () => {
@@ -426,6 +428,7 @@ const ToolDetailPage = () => {
                 toolId={toolId} 
                 toolName={tool.name}
                 onReviewUpdate={handleReviewSubmitted}
+                refreshKey={reviewsRefreshKey}
               />
             </Paper>
           </Fade>
