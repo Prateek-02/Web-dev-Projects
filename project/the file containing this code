@@ -1,0 +1,16 @@
+e.prototype._onLocalPlayerEnabled = function() {
+    this._client.getClientDescriptor().then(t => {
+        const r = t.id;
+        this._sendMessage(_.messages.playerReady({
+            device_id: r
+        }));
+    });
+},
+e.prototype._onLocalPlayerDisabled = function() {
+    this._client.getClientDescriptor().then(t => {
+        const r = t.id;
+        this._sendMessage(_.messages.playerNotReady({
+            device_id: r
+        }));
+    });
+}, 
