@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Ubuntu&family=Varela+Round&display=swap');
 
 body{
-    background-color: antiquewhite;
+    background-color: rgb(55, 215, 23);
 }
 
 *{
@@ -63,6 +63,10 @@ nav ul{
     flex-direction: column;
 }
 
+.bottom #time{
+    color: white;
+}
+
 .icons{
     margin-top: 15px;
 }
@@ -87,6 +91,7 @@ nav ul{
     background-color: white;
     color:black;
     margin: 12px 0;
+    width: 40vw;
     justify-content: space-between;
     align-items: center;
     border-radius: 5px;
@@ -117,4 +122,10 @@ nav ul{
 .songInfo img{
     opacity: 0;
     transition: opacity 0.5s ease-in;
+}
+
+@media only screen and (max-width:500px){
+    body{
+        background-color: black
+    }
 }
