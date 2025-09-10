@@ -86,6 +86,7 @@ export default function ResetPassword() {
         setError(error.message);
       } else {
         setMessage('Your password has been reset successfully! You can now log in.');
+        setTimeout(() => navigate('/login'), 2000);
       }
     } catch (err) {
       setError('An unexpected error occurred.');
@@ -242,4 +243,4 @@ export default function ResetPassword() {
       </Container>
     </Box>
   );
-} 
+}

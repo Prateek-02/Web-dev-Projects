@@ -64,6 +64,7 @@ const StyledContainer = styled(Container)(({ theme, darkMode }) => ({
   paddingTop: theme.spacing(8),
   paddingBottom: theme.spacing(8),
   position: 'relative',
+  borderRadius: '15px',
   '&::before': {
     content: '""',
     position: 'absolute',
@@ -207,6 +208,7 @@ const ToolCard = styled(Card)(({ theme, darkMode }) => ({
 
 const StyledButton = styled(Button)(({ theme }) => ({
   background: 'linear-gradient(45deg, #2196F3, #21CBF3)',
+  color: "white",
   borderRadius: '25px',
   textTransform: 'none',
   fontWeight: 'bold',
